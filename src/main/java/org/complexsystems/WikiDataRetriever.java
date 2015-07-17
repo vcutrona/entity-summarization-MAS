@@ -1,20 +1,28 @@
 package org.complexsystems;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import org.complexsystems.interfaces.Retriever;
 import org.wikidata.wdtk.datamodel.interfaces.Claim;
 import org.wikidata.wdtk.datamodel.interfaces.EntityDocument;
 import org.wikidata.wdtk.datamodel.interfaces.ItemDocument;
 import org.wikidata.wdtk.datamodel.interfaces.ItemIdValue;
 import org.wikidata.wdtk.datamodel.interfaces.PropertyDocument;
 import org.wikidata.wdtk.datamodel.interfaces.PropertyIdValue;
+import org.wikidata.wdtk.datamodel.interfaces.Snak;
+import org.wikidata.wdtk.datamodel.interfaces.SnakGroup;
 import org.wikidata.wdtk.datamodel.interfaces.Statement;
 import org.wikidata.wdtk.datamodel.interfaces.Value;
 import org.wikidata.wdtk.datamodel.interfaces.ValueSnak;
 import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
 
-public class WikiDataRetriever {
+/**
+ * Classe che implementa l'interfaccia Retriever, per recuperare i dati
+ * dalla base di conoscenza WikiData.
+ */
+public class WikiDataRetriever implements Retriever {
 
 	private WikibaseDataFetcher wbdf;
 
@@ -22,55 +30,100 @@ public class WikiDataRetriever {
 		this.wbdf = new WikibaseDataFetcher();
 	}
 
-	public ArrayList<String, String> getAll(String searchString) {
+	public ArrayList<Pair<String, String>> getAllPairs(String searchString) {
+		
 		EntityDocument document = wbdf.getEntityDocumentByTitle("enwiki",
 				searchString);
-		HashMap <String, String> map  = new HashMap();
+		
+		ArrayList<Pair<String, String>> list = 
+				new ArrayList<Pair<String, String>>();
 
 		if (document instanceof ItemDocument) {
 
 			Iterator<Statement> it = ((ItemDocument) document)
 					.getAllStatements();
+
 			while (it.hasNext()) {
 				Statement st = it.next();
 				Claim claim = st.getClaim();
-				map.put(arg0, arg1)
+
+				Pair<String, String> pair = new Pair<String, String>(
+						getProperty(claim), getObject(claim));
+				pair.setQualifiers(this.getQualifiers(claim));
+
+				list.add(pair);
 			}
 		}
 
-		return null;
+		return list;
 	}
 
 	public String getProperty(Claim claim) {
 
-		ValueSnak snk = (ValueSnak) claim.getMainSnak();
+		if (claim.getMainSnak() instanceof ValueSnak) {
+			ValueSnak snk = (ValueSnak) claim.getMainSnak();
+			PropertyIdValue prp = snk.getPropertyId();
 
-		PropertyIdValue prp = snk.getPropertyId();
+			PropertyDocument property = (PropertyDocument) wbdf
+					.getEntityDocument(prp.getId());
+			
+			return property.getLabels().get("en").getText();
 
-		PropertyDocument property = (PropertyDocument) wbdf
-				.getEntityDocument(prp.getId());
-		String propertyText = property.getLabels().get("en").getText();
-		return (propertyText);
+		} else {
+			System.out.println(claim.getMainSnak());
+			return "";
+		}
 
 	}
 
 	public String getObject(Claim claim) {
 
-		ValueSnak snk = (ValueSnak) claim.getMainSnak();
-		Value v = snk.getValue();
-		String returned = "";
+		if (claim.getMainSnak() instanceof ValueSnak) {
+			
+			ValueSnak snk = (ValueSnak) claim.getMainSnak();
+			Value v = snk.getValue();
+			String objValue = "";
 
-		// "Q1731" is "Dresden" on Wikidata
-		if (v instanceof ItemIdValue) {
-			EntityDocument et = wbdf.getEntityDocument(((ItemIdValue) v)
-					.getId());
-			returned = (((ItemDocument) et).getLabels().get("en").getText());
+			if (v instanceof ItemIdValue) {
+				EntityDocument et = wbdf.getEntityDocument(((ItemIdValue) v)
+						.getId());
+				objValue = (((ItemDocument) et).getLabels().get("en")
+						.getText());
+			
+			} else {
+				objValue = v.toString();
+			}
+
+			return objValue;
+
 		} else {
-			returned = v.toString();
+			System.out.println(claim.getMainSnak());
+			return "";
 		}
+	}
 
-		return returned;
+	public ArrayList<Pair<String, String>> getQualifiers(Claim claim) {
 
+		ArrayList<Pair<String, String>> qualifiers = 
+				new ArrayList<Pair<String, String>>();
+
+		ArrayList<SnakGroup> list = (ArrayList<SnakGroup>) claim
+				.getQualifiers();
+		
+		for (SnakGroup snakGroup : list) {
+			List<Snak> snaks = snakGroup.getSnaks();
+			
+			for (Snak snak : snaks) {
+				PropertyIdValue prp = snak.getPropertyId();
+				PropertyDocument property = (PropertyDocument) wbdf
+						.getEntityDocument(prp.getId());
+				String propertyValue = property.getLabels().get("en").getText();
+				Value v = ((ValueSnak) (snak)).getValue();
+				qualifiers.add(new Pair<String, String>(propertyValue, v
+						.toString()));
+			}
+		}
+		return qualifiers;
 	}
 
 }

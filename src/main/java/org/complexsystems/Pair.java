@@ -1,14 +1,18 @@
 package org.complexsystems;
 
+import java.util.ArrayList;
+
 public class Pair<A, B> {
     private A property;
     private B object;
+    private ArrayList<Pair<A, B>> qualifiers;
 
     public Pair(A property, B object) {
     	super();
     	this.property = property;
     	this.object = object;
-    }
+    	this.qualifiers = new ArrayList<Pair<A, B>>();
+    }    
 
     public int hashCode() {
     	int hashFirst = property != null ? property.hashCode() : 0;
@@ -19,7 +23,8 @@ public class Pair<A, B> {
 
     public boolean equals(Object other) {
     	if (other instanceof Pair) {
-    		Pair otherPair = (Pair) other;
+    		@SuppressWarnings("unchecked")
+			Pair<A, B> otherPair = ((Pair<A, B>) other);
     		return 
     		((  this.property == otherPair.property ||
     			( this.property != null && otherPair.property != null &&
@@ -34,7 +39,16 @@ public class Pair<A, B> {
 
     public String toString()
     { 
-           return "(" + property + ", " + object + ")"; 
+    	String string = "(" + property + ", " + object + ")";
+    	if (!this.getQualifiers().isEmpty()) {
+    		string += "\n";
+    		string += "\t Qualifiers: \n";
+    		
+    		for (Pair<A, B> pair : qualifiers) {
+				string += "\t " + pair + "\n";
+			}
+    	}
+        return string; 
     }
 
     public A getProperty() {
@@ -51,5 +65,17 @@ public class Pair<A, B> {
 
     public void setObject(B object) {
     	this.object = object;
+    }
+    
+    public void addQualifier(Pair<A, B> pair){
+    	this.qualifiers.add(pair);
+    }
+    
+    public ArrayList<Pair<A, B>> getQualifiers(){
+    	return qualifiers;
+    }
+    
+    public void setQualifiers(ArrayList<Pair<A, B>> qualifiers){
+    	this.qualifiers = qualifiers;
     }
 }
