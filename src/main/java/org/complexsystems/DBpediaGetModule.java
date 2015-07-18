@@ -2,18 +2,16 @@ package org.complexsystems;
 
 import java.util.ArrayList;
 
-import org.complexsystems.interfaces.Retriever;
 
-public class WikiDataGetModule {
-
+public class DBpediaGetModule {
 
 	public static void main(String[] args) {
 
-		WikiDataRetriever wdRetriever = new WikiDataRetriever();
-		ArrayList<Pair<String, String>> wdPairs = wdRetriever
-				.getAllPairs(Retriever.SEARCH);
+		DBpediaRetriever dbRetriever = new DBpediaRetriever();
+		ArrayList<Pair<String, String>> dbPairs = dbRetriever
+				.getAllPairs("<http://dbpedia.org/resource/Cristiano_Ronaldo>");
 
-		printData(wdPairs);
+		printData(dbPairs);
 	}
 	
 
@@ -22,4 +20,5 @@ public class WikiDataGetModule {
 			System.out.println(pair);
 		}
 	}
+	
 }
