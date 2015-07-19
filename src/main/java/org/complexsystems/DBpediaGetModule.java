@@ -2,7 +2,11 @@ package org.complexsystems;
 
 import java.util.ArrayList;
 
-
+/**
+ * Modulo che effettua l'estrazione dei dati da DBpedia
+ * @author vinid
+ *
+ */
 public class DBpediaGetModule {
 
 	public static void main(String[] args) {
