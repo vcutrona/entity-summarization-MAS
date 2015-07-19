@@ -3,7 +3,6 @@ package org.complexsystems;
 import java.util.ArrayList;
 
 import org.complexsystems.interfaces.Retriever;
-import org.wikidata.wdtk.datamodel.interfaces.Claim;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -18,6 +17,9 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
  */
 public class DBpediaRetriever implements Retriever {
 
+	private static final String RDFSCHEMAPREFIX = 
+			"<http://www.w3.org/2000/01/rdf-schema#>";
+	private static final String SPARQLSERVICE = "http://dbpedia.org/sparql";
 
 	public DBpediaRetriever() {
 	}
@@ -25,16 +27,18 @@ public class DBpediaRetriever implements Retriever {
 	@Override
 	public ArrayList<Pair<String, String>> getAllPairs(String searchString) {
 		// ArrayList dove salvare le pair
-		ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+		ArrayList<Pair<String, String>> list = 
+				new ArrayList<Pair<String, String>>();
 
 		ParameterizedSparqlString qs = new ParameterizedSparqlString(""
-				+ "prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n"
-				+ "\n" + "select ?prop ?obj where {\n" + "  " + searchString
-				+ " ?prop ?obj\n" + " }");
-
+				+ "prefix rdfs:" + RDFSCHEMAPREFIX + "\n\n"
+				+ "select ?prop ?obj where {\n" 
+				+ "  " + stringToResource(searchString)
+				+ " ?prop ?obj\n"
+				+ " }");
 
 		QueryExecution exec = QueryExecutionFactory.sparqlService(
-				"http://dbpedia.org/sparql", qs.asQuery());
+				SPARQLSERVICE, qs.asQuery());
 
 		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 
@@ -46,27 +50,21 @@ public class DBpediaRetriever implements Retriever {
 			String obj = objNode.toString();
 
 			Pair<String, String> pair = new Pair<String, String>(prop, obj);
-
 			list.add(pair);
 		}
 		return list;
 
 	}
 
-	@Override
-	public String getProperty(Claim claim) {
-		// TODO Auto-generated method stub
-		return null;
+	private static String stringToResource (String searchString) {
+		String resource = "<http://dbpedia.org/resource/"
+				+ searchString.replaceAll(" ", "_")
+				+ ">";
+		return resource;
 	}
-
-	@Override
-	public String getObject(Claim claim) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	public static void main(String[] args) {
 
 	}
-
+	
 }

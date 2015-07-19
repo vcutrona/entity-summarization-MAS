@@ -7,7 +7,6 @@ import org.complexsystems.interfaces.Retriever;
 /**
  * Modulo che effettua l'estrazione dei dati da DBpedia
  * @author vinid
- *
  */
 public class DBpediaGetModule {
 
@@ -15,8 +14,7 @@ public class DBpediaGetModule {
 
 		DBpediaRetriever dbRetriever = new DBpediaRetriever();
 		ArrayList<Pair<String, String>> dbPairs = dbRetriever
-				.getAllPairs("<http://dbpedia.org/resource/Cristiano_Ronaldo>");
-
+				.getAllPairs(Retriever.SEARCH);
 		printData(dbPairs);
 	}
 	
@@ -24,7 +22,7 @@ public class DBpediaGetModule {
 	{
 		DBpediaRetriever dbRetriever = new DBpediaRetriever();
 		ArrayList<Pair<String, String>> dbPairs = dbRetriever
-				.getAllPairs("<http://dbpedia.org/resource/Cristiano_Ronaldo>");
+				.getAllPairs(Retriever.SEARCH);
 
 		return dbPairs;
 	}

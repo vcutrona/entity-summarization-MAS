@@ -17,7 +17,7 @@ public class WikiDataGetModule {
 	}
 	
 	/**
-	 * Metodo per resitutire al chiamante i dati trovati
+	 * Metodo per restituire al chiamante i dati trovati
 	 * @return
 	 */
 	public ArrayList<Pair<String, String>> getData()

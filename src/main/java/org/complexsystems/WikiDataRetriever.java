@@ -30,6 +30,7 @@ public class WikiDataRetriever implements Retriever {
 		this.wbdf = new WikibaseDataFetcher();
 	}
 
+	@Override
 	public ArrayList<Pair<String, String>> getAllPairs(String searchString) {
 		
 		EntityDocument document = wbdf.getEntityDocumentByTitle("enwiki",
@@ -49,7 +50,7 @@ public class WikiDataRetriever implements Retriever {
 
 				Pair<String, String> pair = new Pair<String, String>(
 						getProperty(claim), getObject(claim));
-				pair.setQualifiers(this.getQualifiers(claim));
+				pair.setQualifiers(getQualifiers(claim));
 
 				list.add(pair);
 			}
@@ -58,7 +59,7 @@ public class WikiDataRetriever implements Retriever {
 		return list;
 	}
 
-	public String getProperty(Claim claim) {
+	private String getProperty(Claim claim) {
 
 		if (claim.getMainSnak() instanceof ValueSnak) {
 			ValueSnak snk = (ValueSnak) claim.getMainSnak();
@@ -76,7 +77,7 @@ public class WikiDataRetriever implements Retriever {
 
 	}
 
-	public String getObject(Claim claim) {
+	private String getObject(Claim claim) {
 
 		if (claim.getMainSnak() instanceof ValueSnak) {
 			
@@ -102,7 +103,7 @@ public class WikiDataRetriever implements Retriever {
 		}
 	}
 
-	public ArrayList<Pair<String, String>> getQualifiers(Claim claim) {
+	private ArrayList<Pair<String, String>> getQualifiers(Claim claim) {
 
 		ArrayList<Pair<String, String>> qualifiers = 
 				new ArrayList<Pair<String, String>>();
