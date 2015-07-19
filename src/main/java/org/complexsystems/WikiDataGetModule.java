@@ -16,6 +16,19 @@ public class WikiDataGetModule {
 		printData(wdPairs);
 	}
 	
+	/**
+	 * Metodo per resitutire al chiamante i dati trovati
+	 * @return
+	 */
+	public ArrayList<Pair<String, String>> getData()
+	{
+		WikiDataRetriever wdRetriever = new WikiDataRetriever();
+		ArrayList<Pair<String, String>> wdPairs = wdRetriever
+				.getAllPairs(Retriever.SEARCH);
+		
+		return wdPairs;
+	}
+	
 
 	private static void printData(ArrayList<Pair<String, String>> pairs) {
 		for (Pair<String, String> pair : pairs) {
