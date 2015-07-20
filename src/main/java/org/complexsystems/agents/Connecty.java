@@ -1,6 +1,7 @@
 package org.complexsystems.agents;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.complexsystems.DBpediaGetModule;
 import org.complexsystems.DBpediaWikiDataConnector;
@@ -9,6 +10,8 @@ import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 
 import jade.core.Agent;
+
+import java.util.Set;
 
 public class Connecty  extends Agent {
 
@@ -129,6 +132,7 @@ public class Connecty  extends Agent {
 					for (Pair<String, String> pair3 : agg.wdProp) {
 						if (pair3.getUri().equals(wdPropertyUri)){
 							tempWd.add(pair3);
+							//removalPair2.add(pair3);
 							//agg.wdProp.remove(pair3);
 						}
 					}
@@ -136,16 +140,27 @@ public class Connecty  extends Agent {
 					ArrayList<Pair<String, String>> tempDb = new ArrayList<Pair<String, String>>();
 					for (Pair<String, String> pair3 : agg.dbProp) {
 						if (pair3.getProperty().equals(pair.getProperty())){
+							System.out.println(pair3);
 							tempDb.add(pair3);
+							//removalPair3.add(pair3);
 							//agg.dbProp.remove(pair3);
 						}
 					}
+										
 					
 					Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> newInsert = new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(tempWd, tempDb);
 					agg.getData().add(newInsert);
 				}
 			}
 		}
+		
+		//Rimozione dei duplicati
+		Set <Pair<ArrayList<Pair<String, String>>, 
+		ArrayList<Pair<String, String>>>> hs = new HashSet <Pair<ArrayList<Pair<String, String>>, 
+				ArrayList<Pair<String, String>>>> ();
+		hs.addAll(agg.getData());
+		agg.getData().clear();
+		agg.getData().addAll(hs);
 		
 		for (Pair<ArrayList<Pair<String, String>>, 
 			ArrayList<Pair<String, String>>> pair : agg.getData()) {

@@ -84,8 +84,8 @@ public class DBpediaRetriever implements Retriever {
 	public static void main(String args[])
 	{
 		DBpediaRetriever dn = new DBpediaRetriever();
-		DBpediaTextToEntity dte = new DBpediaTextToEntity("Barak Obama");
-		System.out.println(dte.getEntity());
-		System.out.println(dn.getDescription(dte.getEntity()));
+		DBpediaTextToEntity dte = new DBpediaTextToEntity("Domenico_Berardi");
+		System.out.println(dn.getAllPairs(dte.getEntity()));
+
 	}
 }

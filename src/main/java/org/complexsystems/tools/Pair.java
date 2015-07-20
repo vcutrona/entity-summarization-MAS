@@ -53,7 +53,11 @@ public class Pair<A, B> {
 	    	}
     	} else {
     		string += "Iterazione \n";
-    		for (Pair<String, String> pair : (ArrayList<Pair<String, String>>)this.property) {
+    		for (Pair<String, String> pair : (ArrayList<Pair<String, String>>) this.property) {
+    			string += "\t\t";
+				string += pair.toString() + "\n";
+			}
+    		for (Pair<String, String> pair : (ArrayList<Pair<String, String>>) this.object) {
     			string += "\t\t";
 				string += pair.toString() + "\n";
 			}

@@ -6,7 +6,7 @@ import org.complexsystems.tools.Pair;
 
 public interface Retriever {
 	
-	static final String SEARCH = "Domenico Berardi";
+	static final String SEARCH = "Alessandro Del Piero";
 
 	/**
 	 * Metodo per ottenere l'elenco di coppie proprietà-valore di una
