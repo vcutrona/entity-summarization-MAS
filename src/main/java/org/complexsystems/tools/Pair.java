@@ -24,7 +24,6 @@ public class Pair<A, B> {
 
     public boolean equals(Object other) {
     	if (other instanceof Pair) {
-    		@SuppressWarnings("unchecked")
 			Pair<A, B> otherPair = ((Pair<A, B>) other);
     		return 
     		((  this.property == otherPair.property ||
@@ -32,7 +31,13 @@ public class Pair<A, B> {
     			  this.property.equals(otherPair.property))) &&
     		 (	this.object == otherPair.object ||
     			( this.object != null && otherPair.object != null &&
-    			  this.object.equals(otherPair.object))) );
+    			  this.object.equals(otherPair.object))) &&
+    		 (	this.uri == otherPair.uri ||
+    			( this.uri != null && otherPair.uri != null &&
+    			  this.uri.equals(otherPair.uri))) &&
+    		 (	this.qualifiers == otherPair.qualifiers ||
+    			( this.qualifiers != null && otherPair.qualifiers != null &&
+    			  this.qualifiers.equals(otherPair.qualifiers))));
     	}
 
     	return false;
@@ -52,7 +57,7 @@ public class Pair<A, B> {
 				}
 	    	}
     	} else {
-    		string += "Iterazione \n";
+    		string += "\t Iterazione \n";
     		for (Pair<String, String> pair : (ArrayList<Pair<String, String>>) this.property) {
     			string += "\t\t";
 				string += pair.toString() + "\n";

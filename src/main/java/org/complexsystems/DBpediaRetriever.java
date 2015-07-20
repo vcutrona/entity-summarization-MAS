@@ -9,6 +9,7 @@ import org.complexsystems.tools.Pair;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -45,12 +46,14 @@ public class DBpediaRetriever implements Retriever {
 		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 
 		while (results.hasNext()) {
-			RDFNode propNode = results.next().get("prop");
-			RDFNode objNode = results.next().get("obj");
-
+			
+			QuerySolution node = results.next();
+			RDFNode propNode = node.get("prop");
+			RDFNode objNode = node.get("obj");
+			
 			String prop = propNode.toString();
 			String obj = objNode.toString();
-
+			
 			Pair<String, String> pair = new Pair<String, String>(prop, obj);
 			list.add(pair);
 		}
@@ -84,7 +87,7 @@ public class DBpediaRetriever implements Retriever {
 	public static void main(String args[])
 	{
 		DBpediaRetriever dn = new DBpediaRetriever();
-		DBpediaTextToEntity dte = new DBpediaTextToEntity("Domenico_Berardi");
+		DBpediaTextToEntity dte = new DBpediaTextToEntity("Alessandro Del Piero");
 		System.out.println(dn.getAllPairs(dte.getEntity()));
 
 	}

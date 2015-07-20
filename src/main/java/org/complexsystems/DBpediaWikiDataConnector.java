@@ -97,7 +97,7 @@ public class DBpediaWikiDataConnector {
 	 * Otteniamo una percentuale di parole uguali, da utilizzare in qualche
 	 * modo sull'edit distance
 	 */
-	private double customSameAs(String s1, String s2) {
+	public double customSameAs(String s1, String s2) {
 		s1 = splitCamelCase(s1);
 		s2 = splitCamelCase(s2);
 		

@@ -127,7 +127,10 @@ public class Connecty extends Agent {
 
 			System.out.println("Check SameAs links");
 			checkSameAsProperties();
-
+	
+			System.out.println("Check CustomSameAs links");
+			checkCustomSameAsProperties();
+			
 			System.out.println("End");
 			
 		    //out.close();
@@ -199,10 +202,62 @@ public class Connecty extends Agent {
 		agg.getData().clear();
 		agg.getData().addAll(hs);
 
-		for (Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> pair : agg
-				.getData()) {
+		for (Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> pair : agg.getData()) {
 			System.out.println(pair);
 		}
 
+	}
+	
+	private void checkCustomSameAsProperties() {
+		DBpediaWikiDataConnector c = new DBpediaWikiDataConnector();
+		
+		for (Pair<String, String> wdPair : agg.wdProp) {
+			for (Pair<String, String> dbPair : agg.dbProp) {
+				String wdProperty = wdPair.getProperty();
+				String dbProperty = cleanDBpediaProperty(dbPair.getProperty());
+				
+				//System.out.println("-----");
+				//System.out.println(wdProperty + " <-> " + dbProperty);
+				
+				if (c.customSameAs(wdProperty, dbProperty) == 1) {//ho le stesse parole, magari in ordine diverso
+										
+					ArrayList<Pair<String, String>> tempWd = new ArrayList<Pair<String, String>>();
+					for (Pair<String, String> pair : agg.wdProp) {
+						if (pair.getProperty().equals(wdProperty)) {
+							tempWd.add(pair);
+						}
+					}
+
+					ArrayList<Pair<String, String>> tempDb = new ArrayList<Pair<String, String>>();
+					for (Pair<String, String> pair : agg.dbProp) {
+						if (cleanDBpediaProperty(pair.getProperty()).equals(dbProperty)) {
+							tempDb.add(pair);
+						}
+					}
+
+					Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> newInsert = new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
+							tempWd, tempDb);
+					agg.getData().add(newInsert);
+				}
+			}
+		}
+		
+		// Rimozione dei duplicati
+		Set<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> hs = new HashSet<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>>();
+		hs.addAll(agg.getData());
+		agg.getData().clear();
+		agg.getData().addAll(hs);
+		
+		for (Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> pair : agg.getData()) {
+			System.out.println(pair);
+		}
+	}
+	
+	private String cleanDBpediaProperty(String property){
+		if (property.contains("/")) //es. http://dbpedia.org/ontology/team
+			property = property.substring(property.lastIndexOf("/")+1); //ottengo team
+		if (property.contains("#")) //es. http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			property = property.substring(property.lastIndexOf("#")+1); //ottengo type
+		return property;
 	}
 }
