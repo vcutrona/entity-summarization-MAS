@@ -3,6 +3,7 @@ package org.complexsystems;
 import java.util.ArrayList;
 
 import org.complexsystems.interfaces.Retriever;
+import org.complexsystems.tools.DBpediaTextToEntity;
 import org.complexsystems.tools.Pair;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -56,11 +57,37 @@ public class DBpediaRetriever implements Retriever {
 		return list;
 
 	}
-
-
 	
-	public static void main(String[] args) {
 
+	@Override
+	public String getDescription(String text) {
+		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX dbo:<http://dbpedia.org/ontology/> \n"
+				+ "select ?obj where {\n" 
+				+ "  " + text
+				+ " dbo:abstract ?obj\n"
+				+ " FILTER(langMatches(lang(?obj), \"en\")) }");
+
+		QueryExecution exec = QueryExecutionFactory.sparqlService(
+				SPARQLSERVICE, qs.asQuery());
+
+		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
+
+		String obj = "";
+		while (results.hasNext()) {
+			RDFNode objNode = results.next().get("obj");
+
+			System.out.println(objNode);
+			return obj = objNode.toString();
+
+		}
+		return obj;
 	}
 	
+	public static void main(String args[])
+	{
+		DBpediaRetriever dn = new DBpediaRetriever();
+		DBpediaTextToEntity dte = new DBpediaTextToEntity("Barak Obama");
+		System.out.println(dte.getEntity());
+		System.out.println(dn.getDescription(dte.getEntity()));
+	}
 }

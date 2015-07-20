@@ -36,7 +36,8 @@ public class WikiDataRetriever implements Retriever {
 		
 		EntityDocument document = wbdf.getEntityDocumentByTitle("enwiki",
 				searchString);
-		
+			
+	
 		ArrayList<Pair<String, String>> list = 
 				new ArrayList<Pair<String, String>>();
 
@@ -126,6 +127,19 @@ public class WikiDataRetriever implements Retriever {
 			}
 		}
 		return qualifiers;
+	}
+
+	@Override
+	public String getDescription(String text) {
+		EntityDocument document = wbdf.getEntityDocumentByTitle("enwiki",
+				text);
+			
+		if (document instanceof ItemDocument) {
+			return ((ItemDocument)document).getDescriptions().get("en").getText();
+		
+		}
+		return "No description";
+		 
 	}
 
 }

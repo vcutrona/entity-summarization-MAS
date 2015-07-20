@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.complexsystems.interfaces.Retriever;
 import org.complexsystems.tools.DBpediaTextToEntity;
+import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 
 /**
@@ -20,10 +21,15 @@ public class DBpediaGetModule {
 		
 		ArrayList<Pair<String, String>> dbPairs = dbRetriever
 				.getAllPairs(searchString);
+		
+		String description = dbRetriever.getDescription(searchString);
+		
+		Entity ent = new Entity(description, dbPairs);
+		
 		printData(dbPairs);
 	}
 	
-	public ArrayList<Pair<String, String>> getData()
+	public Entity getData()
 	{
 		
 		String searchString = new DBpediaTextToEntity(Retriever.SEARCH).getEntity();
@@ -32,8 +38,11 @@ public class DBpediaGetModule {
 		DBpediaRetriever dbRetriever = new DBpediaRetriever();
 		ArrayList<Pair<String, String>> dbPairs = dbRetriever
 				.getAllPairs(searchString);
+		String description = dbRetriever.getDescription(searchString);
+		
+		Entity ent = new Entity(description, dbPairs);
 
-		return dbPairs;
+		return ent;
 	}
 
 	private static void printData(ArrayList<Pair<String, String>> pairs) {

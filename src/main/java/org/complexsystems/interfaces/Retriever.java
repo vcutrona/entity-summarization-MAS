@@ -6,7 +6,7 @@ import org.complexsystems.tools.Pair;
 
 public interface Retriever {
 	
-	static final String SEARCH = "Cristiano Ronaldo";
+	static final String SEARCH = "Rome";
 
 	/**
 	 * Metodo per ottenere l'elenco di coppie proprietà-valore di una
@@ -16,5 +16,8 @@ public interface Retriever {
 	 * @return un array di elementi Pair (proprietà-valore)
 	 */
 	ArrayList<Pair<String, String>> getAllPairs(String searchString);
+	
+	String getDescription(String text);
+	
 	
 }

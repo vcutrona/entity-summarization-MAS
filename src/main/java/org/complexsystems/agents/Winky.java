@@ -16,8 +16,6 @@ public class Winky  extends Agent {
         System.out.println("Winky alla ricerca dei dati di wikidata");
         WikiDataGetModule wd = new WikiDataGetModule();
         
-        ArrayList<Pair<String, String>> pairs = wd.getData();
-        
-        System.out.println(pairs);
+
     }
 }

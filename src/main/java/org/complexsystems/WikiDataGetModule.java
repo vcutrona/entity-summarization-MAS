@@ -3,6 +3,7 @@ package org.complexsystems;
 import java.util.ArrayList;
 
 import org.complexsystems.interfaces.Retriever;
+import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 import org.complexsystems.tools.WikiDataTextToEntity;
 
@@ -15,17 +16,19 @@ public class WikiDataGetModule {
 		
 		String serachString = new WikiDataTextToEntity(Retriever.SEARCH).getEntity();
 		
-		ArrayList<Pair<String, String>> wdPairs = wdRetriever
-				.getAllPairs(serachString);
-
-		printData(wdPairs);
+		ArrayList<Pair<String, String>> wdPairs = wdRetriever.getAllPairs(serachString);
+		
+		String description = wdRetriever.getDescription(serachString);
+		Entity ent = new Entity(description, wdPairs);
+		
+		//printData(wdPairs);
 	}
 	
 	/**
 	 * Metodo per restituire al chiamante i dati trovati
 	 * @return
 	 */
-	public ArrayList<Pair<String, String>> getData()
+	public Entity getData()
 	{
 		WikiDataRetriever wdRetriever = new WikiDataRetriever();
 	
@@ -33,8 +36,10 @@ public class WikiDataGetModule {
 
 		ArrayList<Pair<String, String>> wdPairs = wdRetriever
 				.getAllPairs(serachString);
+		String description = wdRetriever.getDescription(serachString);
+		Entity ent = new Entity(description, wdPairs);
 		
-		return wdPairs;
+		return ent;
 	}
 	
 

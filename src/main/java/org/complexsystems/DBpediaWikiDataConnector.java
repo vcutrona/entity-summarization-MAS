@@ -18,9 +18,21 @@ import com.hp.hpl.jena.query.ResultSetFactory;
  */
 public class DBpediaWikiDataConnector {
 
+	/**
+	 *  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+		PREFIX dbo: <http://dbpedia.org/ontology/>
+		SELECT ?prop WHERE {
+			dbo:team owl:equivalentProperty ?prop
+		}
+		risultato: http://www.wikidata.org/entity/P54	
+	*/
 	public static String findSameAsDBpediaToWikiData(String dbProp)
 	{
-		ParameterizedSparqlString qs = new ParameterizedSparqlString();
+		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX owl: <http://www.w3.org/2002/07/owl#>"
+		+ "PREFIX dbo: <http://dbpedia.org/ontology/>"
+		+ "SELECT ?prop WHERE {"
+		+ "	dbo:" + dbProp + " owl:equivalentProperty ?prop "
+		+ "FILTER regex(?prop, 'wikidata') } ");
 
 		QueryExecution exec = QueryExecutionFactory.sparqlService(
 				"http://dbpedia.org/sparql", qs.asQuery());
@@ -28,7 +40,7 @@ public class DBpediaWikiDataConnector {
 		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 
 		while (results.hasNext()) {
-
+			System.out.println(results.next());
 		}
 		
 		return null;
@@ -117,6 +129,6 @@ public class DBpediaWikiDataConnector {
 	
 	public static void main(String[] args) {
 		DBpediaWikiDataConnector c = new DBpediaWikiDataConnector();
-		System.out.println(c.customSameAs("placeOfBirth", "birthPlace"));
+		c.findSameAsDBpediaToWikiData("team");
 	}
 }
