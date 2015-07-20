@@ -21,7 +21,7 @@ public class WikiDataGetModule {
 		String description = wdRetriever.getDescription(serachString);
 		Entity ent = new Entity(description, wdPairs);
 		
-		//printData(wdPairs);
+		printData(wdPairs);
 	}
 	
 	/**

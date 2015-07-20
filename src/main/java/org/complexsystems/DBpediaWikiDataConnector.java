@@ -26,23 +26,29 @@ public class DBpediaWikiDataConnector {
 		}
 		risultato: http://www.wikidata.org/entity/P54	
 	*/
-	public static String findSameAsDBpediaToWikiData(String dbProp)
+	public String findSameAsDBpediaToWikiData(String dbProp)
 	{
-		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX owl: <http://www.w3.org/2002/07/owl#>"
-		+ "PREFIX dbo: <http://dbpedia.org/ontology/>"
-		+ "SELECT ?prop WHERE {"
-		+ "	dbo:" + dbProp + " owl:equivalentProperty ?prop "
-		+ "FILTER regex(?prop, 'wikidata') } ");
-
-		QueryExecution exec = QueryExecutionFactory.sparqlService(
-				"http://dbpedia.org/sparql", qs.asQuery());
-
-		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
-
-		while (results.hasNext()) {
-			System.out.println(results.next());
-		}
+		try {
+			ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+			+ "PREFIX dbo: <http://dbpedia.org/ontology/>\n"
+			+ "SELECT ?prop WHERE {"
+			+ "dbo:" + dbProp.replaceAll("http://dbpedia.org/ontology/", "") + " owl:equivalentProperty ?prop "
+			+ "FILTER regex(?prop, 'wikidata') } ");
+	
+	
+			QueryExecution exec = QueryExecutionFactory.sparqlService(
+					"http://dbpedia.org/sparql", qs.asQuery());
+	
+			ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
+	
+			while (results.hasNext()) {
+				return (results.next().get("prop").toString());
+			}
 		
+		} catch (Exception e) {
+			
+		}
+	
 		return null;
 	}
 	
@@ -128,7 +134,14 @@ public class DBpediaWikiDataConnector {
 	}
 	
 	public static void main(String[] args) {
+		//http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+		//property= http://www.w3.org/2002/07/owl#sameAs
+		//property= http://dbpedia.org/property/clubs
+		//property= http://dbpedia.org/ontology/birthPlace
+		//property= http://dbpedia.org/ontology/birthYear
+		
+		
 		DBpediaWikiDataConnector c = new DBpediaWikiDataConnector();
-		c.findSameAsDBpediaToWikiData("team");
+		System.out.println(c.findSameAsDBpediaToWikiData("birthYear"));
 	}
 }

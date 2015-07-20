@@ -50,10 +50,13 @@ public class WikiDataRetriever implements Retriever {
 				Statement st = it.next();
 				Claim claim = st.getClaim();
 
+				String[] property = getProperty(claim);
+				
 				Pair<String, String> pair = new Pair<String, String>(
-						getProperty(claim), getObject(claim));
+						property[1], getObject(claim));
 				pair.setQualifiers(getQualifiers(claim));
-
+				pair.setUri(property[0]);
+				
 				list.add(pair);
 			}
 		}
@@ -61,7 +64,7 @@ public class WikiDataRetriever implements Retriever {
 		return list;
 	}
 
-	private String getProperty(Claim claim) {
+	private String[] getProperty(Claim claim) {
 
 		if (claim.getMainSnak() instanceof ValueSnak) {
 			ValueSnak snk = (ValueSnak) claim.getMainSnak();
@@ -70,11 +73,12 @@ public class WikiDataRetriever implements Retriever {
 			PropertyDocument property = (PropertyDocument) wbdf
 					.getEntityDocument(prp.getId());
 			
-			return property.getLabels().get("en").getText();
+			return new String[]{prp.getIri(), 
+					property.getLabels().get("en").getText()};
 
 		} else {
 			System.out.println(claim.getMainSnak());
-			return "";
+			return null;
 		}
 
 	}

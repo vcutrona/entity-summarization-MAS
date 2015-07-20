@@ -75,8 +75,6 @@ public class DBpediaRetriever implements Retriever {
 		String obj = "";
 		while (results.hasNext()) {
 			RDFNode objNode = results.next().get("obj");
-
-			System.out.println(objNode);
 			return obj = objNode.toString();
 
 		}

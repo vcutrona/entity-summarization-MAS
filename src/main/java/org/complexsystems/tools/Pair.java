@@ -6,6 +6,7 @@ public class Pair<A, B> {
     private A property;
     private B object;
     private ArrayList<Pair<A, B>> qualifiers;
+    private String uri;
 
     public Pair(A property, B object) {
     	super();
@@ -39,13 +40,22 @@ public class Pair<A, B> {
 
     public String toString()
     { 
-    	String string = "(" + property + ", " + object + ")";
-    	if (!this.getQualifiers().isEmpty()) {
-    		string += "\n";
-    		string += "\t Qualifiers: \n";
-    		
-    		for (Pair<A, B> pair : qualifiers) {
-				string += "\t " + pair + "\n";
+    	String string = "";
+    	if (!(this.property instanceof ArrayList)) {
+	    	string += "(" + property + ", " + object + ")";
+	    	if (!this.getQualifiers().isEmpty()) {
+	    		string += "\n";
+	    		string += "\t Qualifiers: \n";
+	    		
+	    		for (Pair<A, B> pair : qualifiers) {
+					string += "\t " + pair + "\n";
+				}
+	    	}
+    	} else {
+    		string += "Iterazione \n";
+    		for (Pair<String, String> pair : (ArrayList<Pair<String, String>>)this.property) {
+    			string += "\t\t";
+				string += pair.toString() + "\n";
 			}
     	}
         return string; 
@@ -78,4 +88,12 @@ public class Pair<A, B> {
     public void setQualifiers(ArrayList<Pair<A, B>> qualifiers){
     	this.qualifiers = qualifiers;
     }
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 }
