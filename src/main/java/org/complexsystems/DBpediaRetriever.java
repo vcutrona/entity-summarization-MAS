@@ -3,6 +3,7 @@ package org.complexsystems;
 import java.util.ArrayList;
 
 import org.complexsystems.interfaces.Retriever;
+import org.complexsystems.tools.Pair;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -33,7 +34,7 @@ public class DBpediaRetriever implements Retriever {
 		ParameterizedSparqlString qs = new ParameterizedSparqlString(""
 				+ "prefix rdfs:" + RDFSCHEMAPREFIX + "\n\n"
 				+ "select ?prop ?obj where {\n" 
-				+ "  " + stringToResource(searchString)
+				+ "  " + searchString
 				+ " ?prop ?obj\n"
 				+ " }");
 
@@ -56,12 +57,7 @@ public class DBpediaRetriever implements Retriever {
 
 	}
 
-	private static String stringToResource (String searchString) {
-		String resource = "<http://dbpedia.org/resource/"
-				+ searchString.replaceAll(" ", "_")
-				+ ">";
-		return resource;
-	}
+
 	
 	public static void main(String[] args) {
 

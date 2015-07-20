@@ -2,8 +2,8 @@ package org.complexsystems.agents;
 
 import java.util.ArrayList;
 
-import org.complexsystems.Pair;
 import org.complexsystems.WikiDataGetModule;
+import org.complexsystems.tools.Pair;
 
 import jade.core.Agent;
 

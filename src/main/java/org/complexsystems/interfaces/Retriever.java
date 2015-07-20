@@ -2,7 +2,7 @@ package org.complexsystems.interfaces;
 
 import java.util.ArrayList;
 
-import org.complexsystems.Pair;
+import org.complexsystems.tools.Pair;
 
 public interface Retriever {
 	

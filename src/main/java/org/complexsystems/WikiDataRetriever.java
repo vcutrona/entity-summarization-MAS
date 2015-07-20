@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.complexsystems.interfaces.Retriever;
+import org.complexsystems.tools.Pair;
 import org.wikidata.wdtk.datamodel.interfaces.Claim;
 import org.wikidata.wdtk.datamodel.interfaces.EntityDocument;
 import org.wikidata.wdtk.datamodel.interfaces.ItemDocument;

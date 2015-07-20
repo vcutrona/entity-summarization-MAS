@@ -3,6 +3,8 @@ package org.complexsystems;
 import java.util.ArrayList;
 
 import org.complexsystems.interfaces.Retriever;
+import org.complexsystems.tools.Pair;
+import org.complexsystems.tools.WikiDataTextToEntity;
 
 public class WikiDataGetModule {
 
@@ -10,8 +12,11 @@ public class WikiDataGetModule {
 	public static void main(String[] args) {
 
 		WikiDataRetriever wdRetriever = new WikiDataRetriever();
+		
+		String serachString = new WikiDataTextToEntity(Retriever.SEARCH).getEntity();
+		
 		ArrayList<Pair<String, String>> wdPairs = wdRetriever
-				.getAllPairs(Retriever.SEARCH);
+				.getAllPairs(serachString);
 
 		printData(wdPairs);
 	}
@@ -23,8 +28,11 @@ public class WikiDataGetModule {
 	public ArrayList<Pair<String, String>> getData()
 	{
 		WikiDataRetriever wdRetriever = new WikiDataRetriever();
+	
+		String serachString = new WikiDataTextToEntity(Retriever.SEARCH).getEntity();
+
 		ArrayList<Pair<String, String>> wdPairs = wdRetriever
-				.getAllPairs(Retriever.SEARCH);
+				.getAllPairs(serachString);
 		
 		return wdPairs;
 	}
