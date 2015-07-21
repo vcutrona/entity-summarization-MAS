@@ -17,7 +17,11 @@ import org.complexsystems.WikiDataGetModule;
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 
+import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 
 import java.util.Set;
 
@@ -88,6 +92,72 @@ public class Connecty extends Agent {
 	@Override
 	protected void setup() {
 
+				agg = new Aggregator();
+				
+				//Ci dovrebbe essere un modo per contattare più agenti insieme
+				//Nota: il messaggio sarà la stringa di query
+				
+				//Contatto winky
+				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+				msg.addReceiver(new AID("Winky", AID.ISLOCALNAME));
+				msg.setLanguage("English");
+				msg.setOntology("Weather-Forecast-Ontology");
+				msg.setContent("Today it’s raining");
+				send(msg);
+				
+				//Contatto Debby
+				msg = new ACLMessage(ACLMessage.INFORM);
+				msg.addReceiver(new AID("Debby", AID.ISLOCALNAME));
+				msg.setLanguage("English");
+				msg.setOntology("Weather-Forecast-Ontology");
+				msg.setContent("Today it’s raining");
+				send(msg);
+				
+				addBehaviour(new CyclicBehaviour(this) 
+                {
+                     public void action() 
+                     {
+                    	//ricevo il messaggio
+                        ACLMessage msg= receive();
+                        if (msg!=null)
+							try {
+								System.out.println( " - " +
+										   myAgent.getLocalName() + " <- ha ricevuto un messaggio" );
+								String sender = msg.getSender().getName();
+								//Chiaramente questa cosa va sistemata con il corretto metodo per 
+								//fare dispatch tra gli agenti...metodo che non trovo
+								if(sender.contains("Winky"))
+								{
+									Entity wiki = ((Entity) msg.getContentObject());
+									agg.setWikiDataDescription(wiki.getDescription());
+									agg.setWdProp(wiki.getListOfPropertiesAndPairs());
+
+								}
+								else
+								{
+									Entity db = ((Entity) msg.getContentObject());
+
+									agg.setDBpediaDescription(db.getDescription());
+									agg.setDbProp(db.getListOfPropertiesAndPairs());
+								}
+								if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
+								{
+									System.out.println("Check SameAs links");
+									checkSameAsProperties();
+							
+									System.out.println("Check CustomSameAs links");
+									checkCustomSameAsProperties();
+									
+								}
+								
+							} catch (UnreadableException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+                        block();
+                     }
+                });
+		
 		//try {
 			
 			/*
@@ -115,6 +185,7 @@ public class Connecty extends Agent {
 		    out.flush();
 			*/
 
+		/*
 			System.out.println("Ask entities");
 			Entity wiki = askWikiDataEntity();
 			Entity db = askDBpediaEntity();
@@ -132,6 +203,7 @@ public class Connecty extends Agent {
 			checkCustomSameAsProperties();
 			
 			System.out.println("End");
+			*/
 			
 		    //out.close();
 	
@@ -141,19 +213,6 @@ public class Connecty extends Agent {
 
 	}
 
-	private Entity askWikiDataEntity() {
-		WikiDataGetModule wd = new WikiDataGetModule();
-		Entity wiki = wd.getData();
-
-		return wiki;
-	}
-
-	private Entity askDBpediaEntity() {
-		DBpediaGetModule dbd = new DBpediaGetModule();
-		Entity db = dbd.getData();
-
-		return db;
-	}
 
 	private void checkSameAsProperties() {
 		DBpediaWikiDataConnector c = new DBpediaWikiDataConnector();

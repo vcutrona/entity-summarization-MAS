@@ -1,8 +1,13 @@
 package org.complexsystems.tools;
 
+
 import java.util.ArrayList;
 
-public class Entity {
+public class Entity implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String description;
 	private ArrayList<Pair<String, String>> listOfPropertiesAndPairs;
 	

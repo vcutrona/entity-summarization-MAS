@@ -1,8 +1,9 @@
 package org.complexsystems.tools;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Pair<A, B> {
+public class Pair<A, B> implements Serializable {
     private A property;
     private B object;
     private ArrayList<Pair<A, B>> qualifiers;
