@@ -28,14 +28,18 @@ public class DBpediaWikiDataConnector {
 	*/
 	public String findSameAsDBpediaToWikiData(String dbProp)
 	{
-		try {
-			ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
-			+ "PREFIX dbo: <http://dbpedia.org/ontology/>\n"
-			+ "SELECT ?prop WHERE {"
-			+ "dbo:" + dbProp.replaceAll("http://dbpedia.org/ontology/", "") + " owl:equivalentProperty ?prop "
-			+ "FILTER regex(?prop, 'wikidata') } ");
-	
-	
+		/*
+		 * Al momento solo alcune proprietà ontologiche hanno l'equivalent property.
+		 * In questo modo evitiamo molte query sparql inutili (risultato sicuramente vuoto)
+		 */
+		if (dbProp.contains("http://dbpedia.org/ontology/")) {
+			ParameterizedSparqlString qs = new ParameterizedSparqlString(
+				"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+				+ "SELECT ?prop WHERE {"
+				+ "<" + dbProp + "> owl:equivalentProperty ?prop "
+				+ "FILTER regex(?prop, 'wikidata') }"
+			);
+
 			QueryExecution exec = QueryExecutionFactory.sparqlService(
 					"http://dbpedia.org/sparql", qs.asQuery());
 	
@@ -44,11 +48,8 @@ public class DBpediaWikiDataConnector {
 			while (results.hasNext()) {
 				return (results.next().get("prop").toString());
 			}
-		
-		} catch (Exception e) {
-			
 		}
-	
+		
 		return null;
 	}
 	
@@ -133,15 +134,8 @@ public class DBpediaWikiDataConnector {
 				.toLowerCase().trim();
 	}
 	
-	public static void main(String[] args) {
-		//http://www.w3.org/1999/02/22-rdf-syntax-ns#type
-		//property= http://www.w3.org/2002/07/owl#sameAs
-		//property= http://dbpedia.org/property/clubs
-		//property= http://dbpedia.org/ontology/birthPlace
-		//property= http://dbpedia.org/ontology/birthYear
-		
-		
+	public static void main(String[] args) {	
 		DBpediaWikiDataConnector c = new DBpediaWikiDataConnector();
-		System.out.println(c.findSameAsDBpediaToWikiData("birthYear"));
+		System.out.println(c.findSameAsDBpediaToWikiData("http://dbpedia.org/ontology/birthYear"));
 	}
 }

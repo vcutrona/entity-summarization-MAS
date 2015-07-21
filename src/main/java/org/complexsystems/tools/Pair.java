@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Pair<A, B> implements Serializable {
-    private A property;
+
+	private static final long serialVersionUID = 1L;
+	
+	private A property;
     private B object;
     private ArrayList<Pair<A, B>> qualifiers;
     private String uri;
@@ -25,7 +28,7 @@ public class Pair<A, B> implements Serializable {
 
     public boolean equals(Object other) {
     	if (other instanceof Pair) {
-			Pair<A, B> otherPair = ((Pair<A, B>) other);
+			Pair<A, B> otherPair = (Pair<A, B>) other;
     		return 
     		((  this.property == otherPair.property ||
     			( this.property != null && otherPair.property != null &&

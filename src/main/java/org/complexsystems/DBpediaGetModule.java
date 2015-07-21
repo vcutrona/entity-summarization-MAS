@@ -26,7 +26,7 @@ public class DBpediaGetModule {
 		
 		Entity ent = new Entity(description, dbPairs);
 		
-		printData(dbPairs);
+		printData(ent.getListOfPropertiesAndPairs());
 	}
 	
 	public Entity getData()
