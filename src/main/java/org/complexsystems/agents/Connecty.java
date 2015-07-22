@@ -2,6 +2,7 @@ package org.complexsystems.agents;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -162,32 +163,42 @@ public class Connecty extends Agent {
              }
         });
 		
-		//try {
+		/*
+		try {
 			
-			/*
-			ServerSocket serverSocket = new ServerSocket(62666);
+			ServerSocket serverSocket = new ServerSocket(4309);
+			Socket clientSocket = null;
+			
+		    try {
+		    	clientSocket = serverSocket.accept();
+	
+		        if(clientSocket != null)                
+		        	System.out.println("Connected");
+		        
+		        InputStreamReader inputStream = new InputStreamReader(clientSocket.getInputStream());
+                DataOutputStream response = new DataOutputStream(clientSocket.getOutputStream());
+                BufferedReader input = new BufferedReader(inputStream);
+                
+                String inputQuery = input.readLine();
+                System.out.println("The input query is: " + inputQuery);
+                
+                String outputJson = "json";
+                response.writeBytes(outputJson);
+                response.flush();
+                response.close();
+                
+	
+		    } catch (IOException e) {
+		    	System.out.println("Accept failed.");
+		    }
 
-		      Socket clientSocket = null; 
-		       try {
-		            clientSocket = serverSocket.accept();
-
-		            if(clientSocket != null)                
-		                System.out.println("Connected");
-
-		       } catch (IOException e) {
-		             System.err.println("Accept failed.");
-		             System.exit(1);
-		      }
-
-		     PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
-
-
+/*
 		    out.println("HTTP/1.1 200 OK");
 		    out.println("Content-Type: text/html");
 		    out.println("\r\n");
 		    out.println("<p> Hello world </p>");
 		    out.flush();
-			*/
+*/
 
 		/*
 			System.out.println("Ask entities");
@@ -210,10 +221,11 @@ public class Connecty extends Agent {
 			*/
 			
 		    //out.close();
-	
-		//} catch (IOException e) {
-		//	e.printStackTrace();
-		//}
+	/*
+		} catch (IOException e) {
+			System.out.println("Fail!: " + e.toString());
+		}
+		*/
 
 	}
 
