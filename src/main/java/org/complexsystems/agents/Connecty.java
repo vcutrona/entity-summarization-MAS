@@ -17,6 +17,10 @@ import org.complexsystems.WikiDataGetModule;
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -92,71 +96,71 @@ public class Connecty extends Agent {
 	@Override
 	protected void setup() {
 
-				agg = new Aggregator();
-				
-				//Ci dovrebbe essere un modo per contattare più agenti insieme
-				//Nota: il messaggio sarà la stringa di query
-				
-				//Contatto winky
-				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-				msg.addReceiver(new AID("Winky", AID.ISLOCALNAME));
-				msg.setLanguage("English");
-				msg.setOntology("Weather-Forecast-Ontology");
-				msg.setContent("Today it’s raining");
-				send(msg);
-				
-				//Contatto Debby
-				msg = new ACLMessage(ACLMessage.INFORM);
-				msg.addReceiver(new AID("Debby", AID.ISLOCALNAME));
-				msg.setLanguage("English");
-				msg.setOntology("Weather-Forecast-Ontology");
-				msg.setContent("Today it’s raining");
-				send(msg);
-				
-				addBehaviour(new CyclicBehaviour(this) 
-                {
-                     public void action() 
-                     {
-                    	//ricevo il messaggio
-                        ACLMessage msg= receive();
-                        if (msg!=null)
-							try {
-								System.out.println( " - " +
-										   myAgent.getLocalName() + " <- ha ricevuto un messaggio" );
-								String sender = msg.getSender().getName();
-								//Chiaramente questa cosa va sistemata con il corretto metodo per 
-								//fare dispatch tra gli agenti...metodo che non trovo
-								if(sender.contains("Winky"))
-								{
-									Entity wiki = ((Entity) msg.getContentObject());
-									agg.setWikiDataDescription(wiki.getDescription());
-									agg.setWdProp(wiki.getListOfPropertiesAndPairs());
+		agg = new Aggregator();
+		
+		//Ci dovrebbe essere un modo per contattare più agenti insieme
+		//Nota: il messaggio sarà la stringa di query
+		
+		//Contatto winky
+		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		msg.addReceiver(new AID("Winky", AID.ISLOCALNAME));
+		msg.setLanguage("English");
+		msg.setOntology("Weather-Forecast-Ontology");
+		msg.setContent("Today it’s raining");
+		send(msg);
+		
+		//Contatto Debby
+		msg = new ACLMessage(ACLMessage.INFORM);
+		msg.addReceiver(new AID("Debby", AID.ISLOCALNAME));
+		msg.setLanguage("English");
+		msg.setOntology("Weather-Forecast-Ontology");
+		msg.setContent("Today it’s raining");
+		send(msg);
+		
+		addBehaviour(new CyclicBehaviour(this) 
+        {
+             public void action() 
+             {
+            	//ricevo il messaggio
+                ACLMessage msg= receive();
+                if (msg!=null)
+					try {
+						System.out.println( " - " +
+								   myAgent.getLocalName() + " <- ha ricevuto un messaggio" );
+						String sender = msg.getSender().getName();
+						//Chiaramente questa cosa va sistemata con il corretto metodo per 
+						//fare dispatch tra gli agenti...metodo che non trovo
+						if(sender.contains("Winky"))
+						{
+							Entity wiki = ((Entity) msg.getContentObject());
+							agg.setWikiDataDescription(wiki.getDescription());
+							agg.setWdProp(wiki.getListOfPropertiesAndPairs());
 
-								}
-								else
-								{
-									Entity db = ((Entity) msg.getContentObject());
+						}
+						else
+						{
+							Entity db = ((Entity) msg.getContentObject());
 
-									agg.setDBpediaDescription(db.getDescription());
-									agg.setDbProp(db.getListOfPropertiesAndPairs());
-								}
-								if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
-								{
-									System.out.println("Check SameAs links");
-									checkSameAsProperties();
+							agg.setDBpediaDescription(db.getDescription());
+							agg.setDbProp(db.getListOfPropertiesAndPairs());
+						}
+						if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
+						{
+							System.out.println("Check SameAs links");
+							checkSameAsProperties();
+					
+							System.out.println("Check CustomSameAs links");
+							checkCustomSameAsProperties();
 							
-									System.out.println("Check CustomSameAs links");
-									checkCustomSameAsProperties();
-									
-								}
-								
-							} catch (UnreadableException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-                        block();
-                     }
-                });
+						}
+						
+					} catch (UnreadableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                block();
+             }
+        });
 		
 		//try {
 			
@@ -212,7 +216,6 @@ public class Connecty extends Agent {
 		//}
 
 	}
-
 
 	private void checkSameAsProperties() {
 		DBpediaWikiDataConnector c = new DBpediaWikiDataConnector();
@@ -310,6 +313,25 @@ public class Connecty extends Agent {
 		for (Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> pair : agg.getData()) {
 			System.out.println(pair);
 		}
+		
+		/**
+		 * Genero il json
+		 */
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = "";
+		String jsonPrettyString = "";
+		try {
+			jsonString = mapper.writeValueAsString(agg.getData());
+			jsonPrettyString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(agg.getData());
+		} catch (JsonGenerationException e) {
+	         e.printStackTrace();
+		} catch (JsonMappingException e) {
+	         e.printStackTrace();
+	    } catch (IOException e) {
+	         e.printStackTrace();
+	    }
+		System.out.println(jsonString);
+		System.out.println(jsonPrettyString);
 	}
 	
 	private String cleanDBpediaProperty(String property){
