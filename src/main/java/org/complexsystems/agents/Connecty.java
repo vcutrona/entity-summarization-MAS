@@ -17,6 +17,7 @@ import org.complexsystems.DBpediaWikiDataConnector;
 import org.complexsystems.WikiDataGetModule;
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
+import org.complexsystems.tools.Results;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -181,14 +182,15 @@ public class Connecty extends Agent {
 							System.out.println("Check CustomSameAs links");
 							checkCustomSameAsProperties();
 							
-				            String outputJson = "json";
-				            
+							Results res = new Results();
+							res.setDbpediaDescription(agg.DBpediaDescription);
+							res.setWikidataDescription(agg.wikiDataDescription);
+							res.setPairs(agg.data);
+							
 				            ObjectMapper mapper = new ObjectMapper();
 				    		String jsonString = "";
-				    		String jsonPrettyString = "";
 				    		try {
-				    			jsonString = mapper.writeValueAsString(agg.getData());
-				    			jsonPrettyString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(agg.getData());
+				    			jsonString = mapper.writeValueAsString(res);
 				    		} catch (JsonGenerationException e) {
 				    	         e.printStackTrace();
 				    		} catch (JsonMappingException e) {
@@ -197,6 +199,8 @@ public class Connecty extends Agent {
 				    	         e.printStackTrace();
 				    	    }
 				            
+				    		
+				    		
 				    		response.writeBytes(jsonString);
 				    		response.flush();
 				    		response.close();
