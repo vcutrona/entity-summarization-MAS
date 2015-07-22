@@ -55,7 +55,7 @@ public class WikiDataRetriever implements Retriever {
 				Pair<String, String> pair = new Pair<String, String>(
 						property[1], getObject(claim));
 				pair.setQualifiers(getQualifiers(claim));
-				pair.setUri(property[0]);
+				pair.setUriProperty(property[0]);
 				
 				list.add(pair);
 			}
@@ -93,7 +93,7 @@ public class WikiDataRetriever implements Retriever {
 
 			if (v instanceof ItemIdValue) {
 				EntityDocument et = wbdf.getEntityDocument(((ItemIdValue) v)
-						.getId());
+						.getId()); 
 				objValue = (((ItemDocument) et).getLabels().get("en")
 						.getText());
 			
@@ -125,9 +125,15 @@ public class WikiDataRetriever implements Retriever {
 				PropertyDocument property = (PropertyDocument) wbdf
 						.getEntityDocument(prp.getId());
 				String propertyValue = property.getLabels().get("en").getText();
-				Value v = ((ValueSnak) (snak)).getValue();
-				qualifiers.add(new Pair<String, String>(propertyValue, v
-						.toString()));
+					if(snak instanceof ValueSnak)
+					{
+						Value v = ((ValueSnak) (snak)).getValue();
+						qualifiers.add(new Pair<String, String>(propertyValue, v
+								.toString()));
+					} else {
+						qualifiers.add(new Pair<String, String>(propertyValue, snak
+								.toString()));
+					}
 			}
 		}
 		return qualifiers;

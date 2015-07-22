@@ -10,7 +10,8 @@ public class Pair<A, B> implements Serializable {
 	private A property;
     private B object;
     private ArrayList<Pair<A, B>> qualifiers;
-    private String uri;
+    private String uriProperty;
+    private String uriObject;
 
     public Pair(A property, B object) {
     	super();
@@ -36,9 +37,9 @@ public class Pair<A, B> implements Serializable {
     		 (	this.object == otherPair.object ||
     			( this.object != null && otherPair.object != null &&
     			  this.object.equals(otherPair.object))) &&
-    		 (	this.uri == otherPair.uri ||
-    			( this.uri != null && otherPair.uri != null &&
-    			  this.uri.equals(otherPair.uri))) &&
+    		 (	this.uriProperty == otherPair.uriProperty ||
+    			( this.uriProperty != null && otherPair.uriProperty != null &&
+    			  this.uriProperty.equals(otherPair.uriProperty))) &&
     		 (	this.qualifiers == otherPair.qualifiers ||
     			( this.qualifiers != null && otherPair.qualifiers != null &&
     			  this.qualifiers.equals(otherPair.qualifiers))));
@@ -102,11 +103,20 @@ public class Pair<A, B> implements Serializable {
     	this.qualifiers = qualifiers;
     }
 
-	public String getUri() {
-		return uri;
+	public String getUriProperty() {
+		return uriProperty;
 	}
 
-	public void setUri(String uri) {
-		this.uri = uri;
+	public void setUriProperty(String uri) {
+		this.uriProperty = uri;
 	}
+
+	public String getUriObject() {
+		return uriObject;
+	}
+
+	public void setUriObject(String uriObject) {
+		this.uriObject = uriObject;
+	}
+	
 }

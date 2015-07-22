@@ -288,21 +288,21 @@ public class Connecty extends Agent {
 		DBpediaWikiDataConnector c = new DBpediaWikiDataConnector();
 
 		for (Pair<String, String> pair : agg.dbProp) {
-			if (pair.getProperty().isEmpty())
+			if (pair.getUriProperty().isEmpty())
 				continue;
 
 			String wdPropertyUri = c.findSameAsDBpediaToWikiData(pair
-					.getProperty());
+					.getUriProperty());
 
 			if (wdPropertyUri == null)
 				continue;
 
 			for (Pair<String, String> pair2 : agg.wdProp) {
-				if (pair2.getUri().equals(wdPropertyUri)) {
+				if (pair2.getUriProperty().equals(wdPropertyUri)) {
 
 					ArrayList<Pair<String, String>> tempWd = new ArrayList<Pair<String, String>>();
 					for (Pair<String, String> pair3 : agg.wdProp) {
-						if (pair3.getUri().equals(wdPropertyUri)) {
+						if (pair3.getUriProperty().equals(wdPropertyUri)) {
 							tempWd.add(pair3);
 							// removalPair2.add(pair3);
 							// agg.wdProp.remove(pair3);
@@ -343,7 +343,7 @@ public class Connecty extends Agent {
 		for (Pair<String, String> wdPair : agg.wdProp) {
 			for (Pair<String, String> dbPair : agg.dbProp) {
 				String wdProperty = wdPair.getProperty();
-				String dbProperty = cleanDBpediaProperty(dbPair.getProperty());
+				String dbProperty = cleanDBpediaProperty(dbPair.getUriProperty());
 				
 				//System.out.println("-----");
 				//System.out.println(wdProperty + " <-> " + dbProperty);

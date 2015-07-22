@@ -51,10 +51,16 @@ public class DBpediaRetriever implements Retriever {
 			RDFNode propNode = node.get("prop");
 			RDFNode objNode = node.get("obj");
 			
+			
+			
 			String prop = propNode.toString();
 			String obj = objNode.toString();
 			
-			Pair<String, String> pair = new Pair<String, String>(prop, obj);
+			//string senza l'http:ecc...
+			String propString = cleanDBpediaProperty(prop);
+			
+			Pair<String, String> pair = new Pair<String, String>(propString, obj);
+			pair.setUriProperty(prop);
 			list.add(pair);
 		}
 		return list;
@@ -62,6 +68,14 @@ public class DBpediaRetriever implements Retriever {
 	}
 	
 
+	private String cleanDBpediaProperty(String property){
+		if (property.contains("/")) //es. http://dbpedia.org/ontology/team
+			property = property.substring(property.lastIndexOf("/")+1); //ottengo team
+		if (property.contains("#")) //es. http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			property = property.substring(property.lastIndexOf("#")+1); //ottengo type
+		return property;
+	}
+	
 	@Override
 	public String getDescription(String text) {
 		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX dbo:<http://dbpedia.org/ontology/> \n"
