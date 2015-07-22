@@ -12,27 +12,18 @@ public class WikiDataGetModule {
 
 	public static void main(String[] args) {
 
-		WikiDataRetriever wdRetriever = new WikiDataRetriever();
-		
-		String serachString = new WikiDataTextToEntity(Retriever.SEARCH).getEntity();
-		
-		ArrayList<Pair<String, String>> wdPairs = wdRetriever.getAllPairs(serachString);
-		
-		String description = wdRetriever.getDescription(serachString);
-		Entity ent = new Entity(description, wdPairs);
-		
-		printData(ent.getListOfPropertiesAndPairs());
+
 	}
 	
 	/**
 	 * Metodo per restituire al chiamante i dati trovati
 	 * @return
 	 */
-	public Entity getData()
+	public Entity getData(String query)
 	{
 		WikiDataRetriever wdRetriever = new WikiDataRetriever();
 	
-		String serachString = new WikiDataTextToEntity(Retriever.SEARCH).getEntity();
+		String serachString = new WikiDataTextToEntity(query).getEntity();
 
 		ArrayList<Pair<String, String>> wdPairs = wdRetriever
 				.getAllPairs(serachString);

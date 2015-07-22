@@ -31,7 +31,7 @@ public class Winky extends Agent {
 										
 				    ACLMessage reply = new ACLMessage( ACLMessage.INFORM );
 				    try {
-						reply.setContentObject( getWikiDataEntity()  );
+						reply.setContentObject( getWikiDataEntity(msg.getContent())  );
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -45,9 +45,9 @@ public class Winky extends Agent {
 		});
 	}
 	
-	private Entity getWikiDataEntity() {
+	private Entity getWikiDataEntity(String query) {
 		WikiDataGetModule wd = new WikiDataGetModule();
-		Entity wiki = wd.getData();
+		Entity wiki = wd.getData(query);
 		
 		return wiki;
 	}

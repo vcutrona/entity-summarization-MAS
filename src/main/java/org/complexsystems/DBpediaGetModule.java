@@ -15,24 +15,13 @@ public class DBpediaGetModule {
 
 	public static void main(String[] args) {
 
-		DBpediaRetriever dbRetriever = new DBpediaRetriever();
-		
-		String searchString = new DBpediaTextToEntity(Retriever.SEARCH).getEntity();
-		
-		ArrayList<Pair<String, String>> dbPairs = dbRetriever
-				.getAllPairs(searchString);
-		
-		String description = dbRetriever.getDescription(searchString);
-		
-		Entity ent = new Entity(description, dbPairs);
-		
-		printData(ent.getListOfPropertiesAndPairs());
+
 	}
 	
-	public Entity getData()
+	public Entity getData(String query)
 	{
 		
-		String searchString = new DBpediaTextToEntity(Retriever.SEARCH).getEntity();
+		String searchString = new DBpediaTextToEntity(query).getEntity();
 
 		
 		DBpediaRetriever dbRetriever = new DBpediaRetriever();

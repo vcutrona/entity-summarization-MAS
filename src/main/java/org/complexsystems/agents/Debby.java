@@ -30,7 +30,7 @@ public class Debby extends Agent {
 										
 				    ACLMessage reply = new ACLMessage( ACLMessage.INFORM );
 				    try {
-						reply.setContentObject( askDBpediaEntity()  );
+						reply.setContentObject( askDBpediaEntity(msg.getContent())  );
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -44,9 +44,9 @@ public class Debby extends Agent {
 		});
 	}
 	
-	private Entity askDBpediaEntity() {
+	private Entity askDBpediaEntity(String query) {
 		DBpediaGetModule dbd = new DBpediaGetModule();
-		Entity db = dbd.getData();
+		Entity db = dbd.getData(query);
 
 		return db;
 	}

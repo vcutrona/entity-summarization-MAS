@@ -93,11 +93,39 @@ public class Connecty extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	private Aggregator agg;
+	String inputQuery;
+	DataOutputStream response;
 
 	@Override
 	protected void setup() {
 
 		agg = new Aggregator();
+		
+		ServerSocket serverSocket = null;
+		try {
+			serverSocket = new ServerSocket(4309);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Socket clientSocket = null;
+		
+	    try {
+	    	clientSocket = serverSocket.accept();
+
+	        if(clientSocket != null)                
+	        	System.out.println("Connected");
+	        
+	        InputStreamReader inputStream = new InputStreamReader(clientSocket.getInputStream());
+            this.response = new DataOutputStream(clientSocket.getOutputStream());
+            BufferedReader input = new BufferedReader(inputStream);
+            
+            this.inputQuery = input.readLine();
+            System.out.println("The input query is: " + this.inputQuery);
+     
+        	} catch (IOException e) {
+	    	System.out.println("Accept failed.");
+	    }
 		
 		//Ci dovrebbe essere un modo per contattare più agenti insieme
 		//Nota: il messaggio sarà la stringa di query
@@ -107,7 +135,7 @@ public class Connecty extends Agent {
 		msg.addReceiver(new AID("Winky", AID.ISLOCALNAME));
 		msg.setLanguage("English");
 		msg.setOntology("Weather-Forecast-Ontology");
-		msg.setContent("Today it’s raining");
+		msg.setContent(this.inputQuery);
 		send(msg);
 		
 		//Contatto Debby
@@ -115,7 +143,7 @@ public class Connecty extends Agent {
 		msg.addReceiver(new AID("Debby", AID.ISLOCALNAME));
 		msg.setLanguage("English");
 		msg.setOntology("Weather-Forecast-Ontology");
-		msg.setContent("Today it’s raining");
+		msg.setContent(this.inputQuery);
 		send(msg);
 		
 		addBehaviour(new CyclicBehaviour(this) 
@@ -153,9 +181,32 @@ public class Connecty extends Agent {
 							System.out.println("Check CustomSameAs links");
 							checkCustomSameAsProperties();
 							
+				            String outputJson = "json";
+				            
+				            ObjectMapper mapper = new ObjectMapper();
+				    		String jsonString = "";
+				    		String jsonPrettyString = "";
+				    		try {
+				    			jsonString = mapper.writeValueAsString(agg.getData());
+				    			jsonPrettyString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(agg.getData());
+				    		} catch (JsonGenerationException e) {
+				    	         e.printStackTrace();
+				    		} catch (JsonMappingException e) {
+				    	         e.printStackTrace();
+				    	    } catch (IOException e) {
+				    	         e.printStackTrace();
+				    	    }
+				            
+				    		response.writeBytes(jsonString);
+				    		response.flush();
+				    		response.close();
+							
 						}
 						
 					} catch (UnreadableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
