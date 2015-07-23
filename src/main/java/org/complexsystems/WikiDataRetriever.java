@@ -51,13 +51,20 @@ public class WikiDataRetriever implements Retriever {
 				Claim claim = st.getClaim();
 
 				String[] property = getProperty(claim);
-				
-				Pair<String, String> pair = new Pair<String, String>(
+				Pair<String, String> pair = null;
+				try{
+				pair = new Pair<String, String>(
 						property[1], getObject(claim));
 				pair.setQualifiers(getQualifiers(claim));
 				pair.setUriProperty(property[0]);
 				
 				list.add(pair);
+				
+				} catch (NullPointerException e)
+				{
+					System.out.println(property);
+				}
+
 			}
 		}
 

@@ -1,25 +1,23 @@
 package org.complexsystems.agents;
 
+import info.debatty.java.stringsimilarity.Cosine;
+import info.debatty.java.stringsimilarity.Jaccard;
+
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
-import org.complexsystems.DBpediaGetModule;
 import org.complexsystems.DBpediaWikiDataConnector;
-import org.complexsystems.WikiDataGetModule;
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 import org.complexsystems.tools.Results;
 import org.complexsystems.tools.Row;
+import org.complexsystems.tools.StringStaticTools;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -183,6 +181,12 @@ public class Connecty extends Agent {
 							System.out.println("Check CustomSameAs links");
 							checkCustomSameAsProperties();
 							
+							System.out.println("Check Cosine links");
+							checkCosineSameAsProperties();
+							
+							System.out.println("Check Jaccard links");
+							checkJaccardSameAsProperties();
+							
 							Results res = new Results();
 							res.setDbpediaDescription(agg.DBpediaDescription);
 							res.setWikidataDescription(agg.wikiDataDescription);
@@ -317,19 +321,18 @@ public class Connecty extends Agent {
 					}
 
 					Row row = new Row(new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
-							tempWd, tempDb), 1.0);
+							tempWd, tempDb), 1.0, "EP");
 					agg.getData().add(row);
 				}
 			}
 		}
 
 		// Rimozione dei duplicati
-		/*
-		Set<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> hs = new HashSet<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>>();
+		Set<Row> hs = new HashSet<Row>();
 		hs.addAll(agg.getData());
 		agg.getData().clear();
 		agg.getData().addAll(hs);
-*/
+
 		for (Row row : agg.getData()) {
 			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
 			System.out.println("Similarity: " + row.getSimilarity());
@@ -367,19 +370,164 @@ public class Connecty extends Agent {
 					}
 
 					Row row = new Row(new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
-							tempWd, tempDb), 1.0);
+							tempWd, tempDb), 1.0, "CC");
 					agg.getData().add(row);
 				}
 			}
 		}
 		
 		// Rimozione dei duplicati
-		/*
-		Set<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> hs = new HashSet<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>>();
+		// Rimozione dei duplicati
+		
+		Set<Row> hs = new HashSet<Row>();
 		hs.addAll(agg.getData());
 		agg.getData().clear();
 		agg.getData().addAll(hs);
-		*/
+				
+		for (Row row : agg.getData()) {
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
+			System.out.println("Similarity: " + row.getSimilarity());
+			System.out.println(row.getProperties());
+			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<");
+		}
+		/**
+		 * Genero il json
+		 */
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = "";
+		String jsonPrettyString = "";
+		try {
+			jsonString = mapper.writeValueAsString(agg.getData());
+			jsonPrettyString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(agg.getData());
+		} catch (JsonGenerationException e) {
+	         e.printStackTrace();
+		} catch (JsonMappingException e) {
+	         e.printStackTrace();
+	    } catch (IOException e) {
+	         e.printStackTrace();
+	    }
+		System.out.println(jsonString);
+		System.out.println(jsonPrettyString);
+	}
+	
+	private void checkCosineSameAsProperties() {
+		
+		Cosine c1 = new Cosine();
+
+		
+		for (Pair<String, String> wdPair : agg.wdProp) {
+			for (Pair<String, String> dbPair : agg.dbProp) {
+				String wdProperty = wdPair.getProperty();
+				String dbProperty = cleanDBpediaProperty(dbPair.getUriProperty());
+				
+				//System.out.println("-----");
+				//System.out.println(wdProperty + " <-> " + dbProperty);
+				
+				
+				double score = c1.similarity(StringStaticTools.splitCamelCase(wdProperty), StringStaticTools.splitCamelCase(dbProperty));
+				if (score > 0.60) {//dammi tre paroleee
+										
+					ArrayList<Pair<String, String>> tempWd = new ArrayList<Pair<String, String>>();
+					for (Pair<String, String> pair : agg.wdProp) {
+						if (pair.getProperty().equals(wdProperty)) {
+							tempWd.add(pair);
+						}
+					}
+
+					ArrayList<Pair<String, String>> tempDb = new ArrayList<Pair<String, String>>();
+					for (Pair<String, String> pair : agg.dbProp) {
+						if (cleanDBpediaProperty(pair.getProperty()).equals(dbProperty)) {
+							tempDb.add(pair);
+						}
+					}
+
+					Row row = new Row(new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
+							tempWd, tempDb), score, "CS");
+					agg.getData().add(row);
+				}
+			}
+		}
+		
+		// Rimozione dei duplicati
+		// Rimozione dei duplicati
+		
+		Set<Row> hs = new HashSet<Row>();
+		hs.addAll(agg.getData());
+		agg.getData().clear();
+		agg.getData().addAll(hs);
+				
+		for (Row row : agg.getData()) {
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
+			System.out.println("Similarity: " + row.getSimilarity());
+			System.out.println(row.getProperties());
+			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<");
+		}
+		/**
+		 * Genero il json
+		 */
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = "";
+		String jsonPrettyString = "";
+		try {
+			jsonString = mapper.writeValueAsString(agg.getData());
+			jsonPrettyString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(agg.getData());
+		} catch (JsonGenerationException e) {
+	         e.printStackTrace();
+		} catch (JsonMappingException e) {
+	         e.printStackTrace();
+	    } catch (IOException e) {
+	         e.printStackTrace();
+	    }
+		System.out.println(jsonString);
+		System.out.println(jsonPrettyString);
+	}
+	
+	
+private void checkJaccardSameAsProperties() {
+		
+		Jaccard c1 = new Jaccard();
+
+		
+		for (Pair<String, String> wdPair : agg.wdProp) {
+			for (Pair<String, String> dbPair : agg.dbProp) {
+				String wdProperty = wdPair.getProperty();
+				String dbProperty = cleanDBpediaProperty(dbPair.getUriProperty());
+				
+				//System.out.println("-----");
+				//System.out.println(wdProperty + " <-> " + dbProperty);
+				
+				
+				double score = c1.similarity(StringStaticTools.splitCamelCase(wdProperty), StringStaticTools.splitCamelCase(dbProperty));
+				if (score > 0.60) {//dammi tre paroleee
+										
+					ArrayList<Pair<String, String>> tempWd = new ArrayList<Pair<String, String>>();
+					for (Pair<String, String> pair : agg.wdProp) {
+						if (pair.getProperty().equals(wdProperty)) {
+							tempWd.add(pair);
+						}
+					}
+
+					ArrayList<Pair<String, String>> tempDb = new ArrayList<Pair<String, String>>();
+					for (Pair<String, String> pair : agg.dbProp) {
+						if (cleanDBpediaProperty(pair.getProperty()).equals(dbProperty)) {
+							tempDb.add(pair);
+						}
+					}
+
+					Row row = new Row(new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
+							tempWd, tempDb), score, "JI");
+					agg.getData().add(row);
+				}
+			}
+		}
+		
+		// Rimozione dei duplicati
+		// Rimozione dei duplicati
+		
+		Set<Row> hs = new HashSet<Row>();
+		hs.addAll(agg.getData());
+		agg.getData().clear();
+		agg.getData().addAll(hs);
 				
 		for (Row row : agg.getData()) {
 			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
