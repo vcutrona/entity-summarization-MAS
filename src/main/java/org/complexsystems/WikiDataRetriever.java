@@ -131,7 +131,6 @@ public class WikiDataRetriever implements Retriever {
 						String objValue = "";
 						
 						if (v instanceof ItemIdValue) {
-							System.out.println(v.toString());
 							EntityDocument et = wbdf.getEntityDocument(((ItemIdValue) v)
 									.getId());
 							if (((ItemDocument) et).getLabels().get("en") != null)

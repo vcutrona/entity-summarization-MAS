@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.complexsystems.DBpediaGetModule;
@@ -18,6 +19,7 @@ import org.complexsystems.WikiDataGetModule;
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 import org.complexsystems.tools.Results;
+import org.complexsystems.tools.Row;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -40,12 +42,12 @@ public class Connecty extends Agent {
 		private ArrayList<Pair<String, String>> wdProp;
 		private ArrayList<Pair<String, String>> dbProp;
 
-		private ArrayList<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> data;
+		private ArrayList<Row> data;
 
 		public Aggregator() {
 			setWdProp(new ArrayList<Pair<String, String>>());
 			setDbProp(new ArrayList<Pair<String, String>>());
-			setData(new ArrayList<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>>());
+			setData(new ArrayList<Row>());
 		}
 
 		public String getWikiDataDescription() {
@@ -80,15 +82,13 @@ public class Connecty extends Agent {
 			this.dbProp = dbProp;
 		}
 
-		public ArrayList<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> getData() {
+		public ArrayList<Row> getData() {
 			return data;
 		}
 
-		public void setData(
-				ArrayList<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> data) {
+		public void setData(ArrayList<Row> data) {
 			this.data = data;
 		}
-
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -200,8 +200,6 @@ public class Connecty extends Agent {
 				    	         e.printStackTrace();
 				    	    }
 				            
-				    		
-				    		
 				    		response.writeBytes(jsonString);
 				    		response.flush();
 				    		response.close();
@@ -318,21 +316,25 @@ public class Connecty extends Agent {
 						}
 					}
 
-					Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> newInsert = new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
-							tempWd, tempDb);
-					agg.getData().add(newInsert);
+					Row row = new Row(new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
+							tempWd, tempDb), 1.0);
+					agg.getData().add(row);
 				}
 			}
 		}
 
 		// Rimozione dei duplicati
+		/*
 		Set<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> hs = new HashSet<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>>();
 		hs.addAll(agg.getData());
 		agg.getData().clear();
 		agg.getData().addAll(hs);
-
-		for (Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> pair : agg.getData()) {
-			System.out.println(pair);
+*/
+		for (Row row : agg.getData()) {
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
+			System.out.println("Similarity: " + row.getSimilarity());
+			System.out.println(row.getProperties());
+			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<");
 		}
 
 	}
@@ -364,23 +366,27 @@ public class Connecty extends Agent {
 						}
 					}
 
-					Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> newInsert = new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
-							tempWd, tempDb);
-					agg.getData().add(newInsert);
+					Row row = new Row(new Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>(
+							tempWd, tempDb), 1.0);
+					agg.getData().add(row);
 				}
 			}
 		}
 		
 		// Rimozione dei duplicati
+		/*
 		Set<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> hs = new HashSet<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>>();
 		hs.addAll(agg.getData());
 		agg.getData().clear();
 		agg.getData().addAll(hs);
-		
-		for (Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>> pair : agg.getData()) {
-			System.out.println(pair);
+		*/
+				
+		for (Row row : agg.getData()) {
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
+			System.out.println("Similarity: " + row.getSimilarity());
+			System.out.println(row.getProperties());
+			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<");
 		}
-		
 		/**
 		 * Genero il json
 		 */

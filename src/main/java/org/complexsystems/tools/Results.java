@@ -7,7 +7,7 @@ public class Results {
 	
 	private String dbpediaDescription;
 	
-	private ArrayList<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> pairs;
+	private ArrayList<Row> pairs;
 	
 	public String getWikidataDescription() {
 		return wikidataDescription;
@@ -21,14 +21,10 @@ public class Results {
 	public void setDbpediaDescription(String dbpediaDescription) {
 		this.dbpediaDescription = dbpediaDescription;
 	}
-	public ArrayList<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> getPairs() {
+	public ArrayList<Row> getPairs() {
 		return pairs;
 	}
-	public void setPairs(
-			ArrayList<Pair<ArrayList<Pair<String, String>>, ArrayList<Pair<String, String>>>> pairs) {
+	public void setPairs(ArrayList<Row> pairs) {
 		this.pairs = pairs;
 	}
-
-	
-	
 }
