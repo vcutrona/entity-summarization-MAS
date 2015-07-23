@@ -128,8 +128,20 @@ public class WikiDataRetriever implements Retriever {
 					if(snak instanceof ValueSnak)
 					{
 						Value v = ((ValueSnak) (snak)).getValue();
-						qualifiers.add(new Pair<String, String>(propertyValue, v
-								.toString()));
+						String objValue = "";
+						
+						if (v instanceof ItemIdValue) {
+							System.out.println(v.toString());
+							EntityDocument et = wbdf.getEntityDocument(((ItemIdValue) v)
+									.getId());
+							if (((ItemDocument) et).getLabels().get("en") != null)
+								objValue = (((ItemDocument) et).getLabels().get("en").getText());
+							else
+								objValue = "No label defined";
+						} else {
+							objValue = v.toString();
+						}						
+						qualifiers.add(new Pair<String, String>(propertyValue, objValue));
 					} else {
 						qualifiers.add(new Pair<String, String>(propertyValue, snak
 								.toString()));

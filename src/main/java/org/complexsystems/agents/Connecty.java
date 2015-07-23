@@ -156,7 +156,8 @@ public class Connecty extends Agent {
                 if (msg!=null)
 					try {
 						System.out.println( " - " +
-								   myAgent.getLocalName() + " <- ha ricevuto un messaggio" );
+								   myAgent.getLocalName() + " <- ha ricevuto un messaggio da "
+								   + msg.getSender().getLocalName());
 						String sender = msg.getSender().getName();
 						//Chiaramente questa cosa va sistemata con il corretto metodo per 
 						//fare dispatch tra gli agenti...metodo che non trovo
@@ -206,7 +207,6 @@ public class Connecty extends Agent {
 				    		response.close();
 							
 						}
-						
 					} catch (UnreadableException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
