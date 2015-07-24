@@ -2,18 +2,11 @@ package org.complexsystems;
 
 import java.util.ArrayList;
 
-import org.complexsystems.interfaces.Retriever;
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 import org.complexsystems.tools.WikiDataTextToEntity;
 
 public class WikiDataGetModule {
-
-
-	public static void main(String[] args) {
-
-
-	}
 	
 	/**
 	 * Metodo per restituire al chiamante i dati trovati
@@ -32,11 +25,5 @@ public class WikiDataGetModule {
 		
 		return ent;
 	}
-	
 
-	private static void printData(ArrayList<Pair<String, String>> pairs) {
-		for (Pair<String, String> pair : pairs) {
-			System.out.println(pair);
-		}
-	}
 }

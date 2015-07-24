@@ -53,15 +53,14 @@ public class WikiDataRetriever implements Retriever {
 				String[] property = getProperty(claim);
 				Pair<String, String> pair = null;
 				try{
-				pair = new Pair<String, String>(
-						property[1], getObject(claim));
-				pair.setQualifiers(getQualifiers(claim));
-				pair.setUriProperty(property[0]);
-				
-				list.add(pair);
-				
-				} catch (NullPointerException e)
-				{
+					pair = new Pair<String, String>(
+							property[1], getObject(claim));
+					pair.setQualifiers(getQualifiers(claim));
+					pair.setUriProperty(property[0]);
+					
+					list.add(pair);
+					
+				} catch (NullPointerException e) {
 					System.out.println(property);
 				}
 
@@ -159,15 +158,12 @@ public class WikiDataRetriever implements Retriever {
 
 	@Override
 	public String getDescription(String text) {
-		EntityDocument document = wbdf.getEntityDocumentByTitle("enwiki",
-				text);
+		EntityDocument document = wbdf.getEntityDocumentByTitle("enwiki", text);
 			
 		if (document instanceof ItemDocument) {
 			return ((ItemDocument)document).getDescriptions().get("en").getText();
 		
 		}
 		return "No description";
-		 
 	}
-
 }

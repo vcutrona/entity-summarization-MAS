@@ -18,9 +18,6 @@ public class Winky extends Agent {
 		
 		//aggiungo una behavior
 		addBehaviour(new CyclicBehaviour(this) {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
@@ -33,7 +30,6 @@ public class Winky extends Agent {
 				    try {
 						reply.setContentObject( getWikiDataEntity(msg.getContent())  );
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				    reply.addReceiver( msg.getSender() );

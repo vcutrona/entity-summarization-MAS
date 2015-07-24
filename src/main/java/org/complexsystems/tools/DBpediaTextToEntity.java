@@ -5,6 +5,7 @@ import org.complexsystems.interfaces.TextToEntity;
 public class DBpediaTextToEntity implements TextToEntity{
 
 	private String string;
+	private final String DBPEDIAPREFIX = "http://dbpedia.org/resource/";
 	
 	public DBpediaTextToEntity(String text)
 	{
@@ -24,8 +25,9 @@ public class DBpediaTextToEntity implements TextToEntity{
 		this.string = string;
 	}
 	
-	private static String stringToResource (String searchString) {
-		String resource = "<http://dbpedia.org/resource/"
+	private String stringToResource (String searchString) {
+		String resource = "<"
+				+ DBPEDIAPREFIX
 				+ searchString.replaceAll(" ", "_")
 				+ ">";
 		return resource;

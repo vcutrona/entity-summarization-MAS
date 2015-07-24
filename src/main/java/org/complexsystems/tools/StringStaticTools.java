@@ -1,13 +1,15 @@
 package org.complexsystems.tools;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 
 public class StringStaticTools {
 	
-	private static String[] stopWords =  {"a", "of", "the", "is", "are", "or", "and", "him", "her", "his"};
+	private static final String[] STOPWORDS =  {"a", "of", "the", "is", "are", "or", "and", "him", "her", "his"};
 	
 	/**
 	 * Metodo per creare una stringa con le parole separate, partendo
@@ -23,19 +25,17 @@ public class StringStaticTools {
 				StringUtils.splitByCharacterTypeCamelCase(s), " ")
 				.toLowerCase().trim();
 	}
-	
-	public static String removeStopWords(String string)
-	{
 		
-		String [] strArray = StringUtils.splitByWholeSeparator(string, " ");
-		String result = "";
-		for(String word : strArray){
-		    if (!Arrays.asList(stopWords).contains(word.toLowerCase()))
-		    {
-		    	result += word + " ";
-		    }
-		}
-		return result;
+	/**
+	 * Metodo per eliminare le stopWords da una stringa
+	 * @param string
+	 * @return
+	 */
+	public static String removeStopWords(String string)
+	{		
+		List<String> strList = new ArrayList<String>(Arrays.asList(StringUtils.splitByWholeSeparator(string, " ")));
+		strList.removeAll(Arrays.asList(STOPWORDS));
+		return StringUtils.join(strList, " ").toLowerCase().trim();
 	}
 	
 	public static void main(String args[]) {

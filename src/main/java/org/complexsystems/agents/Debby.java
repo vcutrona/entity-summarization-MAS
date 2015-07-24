@@ -17,9 +17,6 @@ public class Debby extends Agent {
 		
 		//aggiungo una behavior
 		addBehaviour(new CyclicBehaviour(this) {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
