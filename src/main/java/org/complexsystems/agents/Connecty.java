@@ -193,7 +193,7 @@ public class Connecty extends Agent {
 							res.setDbpediaDescription(agg.getDBpediaDescription());
 							res.setWikidataDescription(agg.getWikiDataDescription());
 							res.setPairs(agg.data);
-							
+							res.setEntity(inputQuery);
 				            ObjectMapper mapper = new ObjectMapper();
 				    		String jsonString = "";
 				    		String jsonPrettyString = "";

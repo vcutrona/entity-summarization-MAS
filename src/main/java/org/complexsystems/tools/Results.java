@@ -3,6 +3,7 @@ package org.complexsystems.tools;
 import java.util.ArrayList;
 
 public class Results {
+	private String entity;
 	private String wikidataDescription;
 	private String dbpediaDescription;
 	private ArrayList<Row> pairs;
@@ -30,4 +31,13 @@ public class Results {
 	public void setPairs(ArrayList<Row> pairs) {
 		this.pairs = pairs;
 	}
+
+	public String getEntity() {
+		return entity;
+	}
+
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+	
 }
