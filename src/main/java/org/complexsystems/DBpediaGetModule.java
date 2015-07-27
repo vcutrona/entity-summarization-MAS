@@ -21,7 +21,7 @@ public class DBpediaGetModule {
 		DBpediaRetriever dbRetriever = new DBpediaRetriever();
 		ArrayList<Pair<String, String>> dbPairs = dbRetriever
 				.getAllPairs(searchString);
-		String description = dbRetriever.getDescription(searchString);
+		String description = dbRetriever.getSummary(searchString);
 		
 		Entity ent = new Entity(description, dbPairs);
 

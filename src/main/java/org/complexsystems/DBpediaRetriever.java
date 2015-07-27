@@ -98,11 +98,34 @@ public class DBpediaRetriever implements Retriever {
 		return obj;
 	}
 	
+	
+	public String getSummary(String text) {
+		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX dbo:<http://dbpedia.org/ontology/> \n"
+				+ "select ?obj where {\n" 
+				+ "  " + text
+				+ " a ?obj\n"
+				+ " FILTER regex(?obj, 'umbel') }");
+
+		QueryExecution exec = QueryExecutionFactory.sparqlService(
+				SPARQLSERVICE, qs.asQuery());
+
+		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
+
+		String obj = "";
+		while (results.hasNext()) {
+			RDFNode objNode = results.next().get("obj");
+			obj += objNode.toString() + " ";
+
+		}
+		obj = obj.replace("http://umbel.org/umbel/rc/", "");
+		return obj;
+	}
+	
 	public static void main(String args[])
 	{
 		DBpediaRetriever dn = new DBpediaRetriever();
-		DBpediaTextToEntity dte = new DBpediaTextToEntity("Alessandro Del Piero");
-		System.out.println(dn.getAllPairs(dte.getEntity()));
+		DBpediaTextToEntity dte = new DBpediaTextToEntity("Barack Obama");
+		System.out.println(dn.getSummary(dte.getEntity()));
 
 	}
 }
