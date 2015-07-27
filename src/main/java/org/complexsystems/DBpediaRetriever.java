@@ -76,8 +76,7 @@ public class DBpediaRetriever implements Retriever {
 		return property;
 	}
 	
-	@Override
-	public String getDescription(String text) {
+	public String getSummary(String text) {
 		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX dbo:<http://dbpedia.org/ontology/> \n"
 				+ "select ?obj where {\n" 
 				+ "  " + text
@@ -98,8 +97,8 @@ public class DBpediaRetriever implements Retriever {
 		return obj;
 	}
 	
-	
-	public String getSummary(String text) {
+	@Override
+	public String getDescription(String text) {
 		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX dbo:<http://dbpedia.org/ontology/> \n"
 				+ "select ?obj where {\n" 
 				+ "  " + text

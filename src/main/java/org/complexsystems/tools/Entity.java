@@ -7,10 +7,12 @@ public class Entity implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String description;
+	private String summary;
 	private ArrayList<Pair<String, String>> listOfPropertiesAndPairs;
 	
-	public Entity(String description, ArrayList <Pair<String, String>> list) {
+	public Entity(String description, String summary, ArrayList <Pair<String, String>> list) {
 		this.description = description;
+		this.summary = summary;
 		this.listOfPropertiesAndPairs = list;
 	}
 	
@@ -30,5 +32,12 @@ public class Entity implements java.io.Serializable {
 		this.description = description;
 	}
 	
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
 	
 }

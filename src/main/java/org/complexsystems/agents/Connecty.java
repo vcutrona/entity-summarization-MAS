@@ -37,6 +37,7 @@ public class Connecty extends Agent {
 	private class Aggregator {
 		private String wikiDataDescription;
 		private String DBpediaDescription;
+		private String dbpediaAbstract;
 
 		private ArrayList<Pair<String, String>> wdProp;
 		private ArrayList<Pair<String, String>> dbProp;
@@ -88,6 +89,33 @@ public class Connecty extends Agent {
 		public void setData(ArrayList<Row> data) {
 			this.data = data;
 		}
+
+		public String getDbpediaAbstract() {
+			return dbpediaAbstract;
+		}
+
+		public void setDbpediaAbstract(String dbpediaAbstract) {
+			this.dbpediaAbstract = dbpediaAbstract;
+		}
+		
+		public void removeDuplicate() {
+			for (int i = 0; i < data.size(); ++i) {
+				for (int j = 0; j < data.size(); ++j) {
+					if (i != j) {
+						if (data.get(i).hasEqualProperties(data.get(j))) { //hanno la stessa property
+							if (data.get(i).getSimilarity() > data.get(j).getSimilarity()) { //similarity(i) > similarity(j)
+								data.remove(j);
+							} else {
+								data.remove(i);
+							}
+							i = 0;
+							j = 0;
+						}
+					}
+				}
+			}
+		}
+		
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -166,7 +194,6 @@ public class Connecty extends Agent {
 							Entity wiki = ((Entity) msg.getContentObject());
 							agg.setWikiDataDescription(wiki.getDescription());
 							agg.setWdProp(wiki.getListOfPropertiesAndPairs());
-
 						}
 						else
 						{
@@ -174,6 +201,7 @@ public class Connecty extends Agent {
 
 							agg.setDBpediaDescription(db.getDescription());
 							agg.setDbProp(db.getListOfPropertiesAndPairs());
+							agg.setDbpediaAbstract(db.getSummary());
 						}
 						if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
 						{
@@ -189,11 +217,15 @@ public class Connecty extends Agent {
 							System.out.println("Check Jaccard links");
 							checkJaccardSameAsProperties();
 							
+							System.out.println("Removing duplicate....");
+							agg.removeDuplicate();
+							
 							Results res = new Results();
 							res.setDbpediaDescription(agg.getDBpediaDescription());
 							res.setWikidataDescription(agg.getWikiDataDescription());
 							res.setPairs(agg.data);
 							res.setEntity(inputQuery);
+							res.setDbpediaAbstract(agg.getDbpediaAbstract());
 				            ObjectMapper mapper = new ObjectMapper();
 				    		String jsonString = "";
 				    		String jsonPrettyString = "";

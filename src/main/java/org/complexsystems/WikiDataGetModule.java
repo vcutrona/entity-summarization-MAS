@@ -21,7 +21,7 @@ public class WikiDataGetModule {
 		ArrayList<Pair<String, String>> wdPairs = wdRetriever
 				.getAllPairs(serachString);
 		String description = wdRetriever.getDescription(serachString);
-		Entity ent = new Entity(description, wdPairs);
+		Entity ent = new Entity(description, "", wdPairs);
 		
 		return ent;
 	}

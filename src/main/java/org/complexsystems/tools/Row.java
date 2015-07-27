@@ -47,7 +47,11 @@ public class Row {
 	@Override
 	public boolean equals(Object obj) {
 		return this.properties.equals( ((Row) obj).getProperties()) && this.similarity == ((Row) obj).getSimilarity();
-	}	
+	}
+	
+	public boolean hasEqualProperties(Row r) {
+		return this.properties.equals(r.getProperties());
+	}
 	
     public int hashCode() {
     	int hashFirst = this.properties != null ? this.properties.hashCode() : 0;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Results {
 	private String entity;
+	private String dbpediaAbstract;
 	private String wikidataDescription;
 	private String dbpediaDescription;
 	private ArrayList<Row> pairs;
@@ -39,5 +40,12 @@ public class Results {
 	public void setEntity(String entity) {
 		this.entity = entity;
 	}
-	
+
+	public String getDbpediaAbstract() {
+		return dbpediaAbstract;
+	}
+
+	public void setDbpediaAbstract(String dbpediaAbstract) {
+		this.dbpediaAbstract = dbpediaAbstract;
+	}	
 }
