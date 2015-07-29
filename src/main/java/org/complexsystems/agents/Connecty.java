@@ -7,9 +7,9 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 
 import org.complexsystems.DBpediaWikiDataConnector;
@@ -29,6 +29,8 @@ import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 
 import java.util.Set;
 
@@ -121,64 +123,69 @@ public class Connecty extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	private Aggregator agg;
-	String inputQuery;
-	DataOutputStream response;
+	private String inputQuery;
+	private InputStreamReader inputStream;
+	private DataOutputStream response;
+	private Socket clientSocket;
+	private BufferedReader input;
 
 	@Override
 	protected void setup() {
 
-		agg = new Aggregator();
-		
-		ServerSocket serverSocket = null;
-		try {
-			serverSocket = new ServerSocket(4309);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		Socket clientSocket = null;
-		
+		Object[] args = getArguments();
+		this.clientSocket = (Socket)args[0];
+		this.agg = new Aggregator();
+				
 	    try {
-	    	clientSocket = serverSocket.accept();
-
-	        if(clientSocket != null)                
-	        	System.out.println("Connected");
+	        if(this.clientSocket != null)                
+	        	System.out.println("Sto servendo il client che ha indirizzo " + this.clientSocket.getInetAddress());
 	        
-	        InputStreamReader inputStream = new InputStreamReader(clientSocket.getInputStream());
-            this.response = new DataOutputStream(clientSocket.getOutputStream());
-            BufferedReader input = new BufferedReader(inputStream);
-            
+	        this.inputStream = new InputStreamReader(this.clientSocket.getInputStream());
+            this.response = new DataOutputStream(this.clientSocket.getOutputStream());
+            this.input = new BufferedReader(this.inputStream);
             this.inputQuery = input.readLine();
+            
             System.out.println("The input query is: " + this.inputQuery);
-     
-        	} catch (IOException e) {
-	    	System.out.println("Accept failed.");
-	    }
+    	} catch (IOException e) {
+    		System.out.println("Accept failed.");
+    	}
 		
-		//Ci dovrebbe essere un modo per contattare più agenti insieme
-		//Nota: il messaggio sarà la stringa di query
+	    //Creo Winky e Debby
+	    String nameWinkyAgent = "Winky-" + String.valueOf((new Date()).hashCode());
+	    String nameDebbyAgent = "Debby-" + String.valueOf((new Date()).hashCode());
+		AgentContainer c = getContainerController();
+		try {
+			AgentController a = c.createNewAgent(nameWinkyAgent, "org.complexsystems.agents.Winky", null);
+			AgentController b = c.createNewAgent(nameDebbyAgent, "org.complexsystems.agents.Debby", null);
+			a.start();
+			b.start();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
-		//Contatto winky
+		//Contatto Winky
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.addReceiver(new AID("Winky", AID.ISLOCALNAME));
+		msg.addReceiver(new AID(nameWinkyAgent, AID.ISLOCALNAME));
 		msg.setLanguage("English");
 		msg.setOntology("Weather-Forecast-Ontology");
 		msg.setContent(this.inputQuery);
 		send(msg);
-		
+				
 		//Contatto Debby
 		msg = new ACLMessage(ACLMessage.INFORM);
-		msg.addReceiver(new AID("Debby", AID.ISLOCALNAME));
+		msg.addReceiver(new AID(nameDebbyAgent, AID.ISLOCALNAME));
 		msg.setLanguage("English");
 		msg.setOntology("Weather-Forecast-Ontology");
 		msg.setContent(this.inputQuery);
 		send(msg);
 		
-		addBehaviour(new CyclicBehaviour(this) 
+		addBehaviour(new CyclicBehaviour()
         {
 			private static final long serialVersionUID = 1L;
 
 			public void action() 
-             {
+            {
             	//ricevo il messaggio
                 ACLMessage msg= receive();
                 if (msg!=null)
@@ -187,22 +194,21 @@ public class Connecty extends Agent {
 								   myAgent.getLocalName() + " <- ha ricevuto un messaggio da "
 								   + msg.getSender().getLocalName());
 						String sender = msg.getSender().getName();
-						//Chiaramente questa cosa va sistemata con il corretto metodo per 
-						//fare dispatch tra gli agenti...metodo che non trovo
+
 						if(sender.contains("Winky"))
 						{
 							Entity wiki = ((Entity) msg.getContentObject());
 							agg.setWikiDataDescription(wiki.getDescription());
 							agg.setWdProp(wiki.getListOfPropertiesAndPairs());
 						}
-						else
+						else if (sender.contains("Debby"))
 						{
 							Entity db = ((Entity) msg.getContentObject());
-
 							agg.setDBpediaDescription(db.getDescription());
 							agg.setDbProp(db.getListOfPropertiesAndPairs());
 							agg.setDbpediaAbstract(db.getSummary());
 						}
+						
 						if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
 						{
 							System.out.println("Check SameAs links");
@@ -244,8 +250,7 @@ public class Connecty extends Agent {
 				    		
 				    		response.writeBytes(jsonString);
 				    		response.flush();
-				    		response.close();
-							
+							doDelete();
 						}
 					} catch (UnreadableException e) {
 						e.printStackTrace();
@@ -255,71 +260,19 @@ public class Connecty extends Agent {
                 block();
              }
         });
-		
-		/*
+	}
+	
+	@Override
+	public void doDelete() {
+		super.doDelete();
 		try {
-			
-			ServerSocket serverSocket = new ServerSocket(4309);
-			Socket clientSocket = null;
-			
-		    try {
-		    	clientSocket = serverSocket.accept();
-	
-		        if(clientSocket != null)                
-		        	System.out.println("Connected");
-		        
-		        InputStreamReader inputStream = new InputStreamReader(clientSocket.getInputStream());
-                DataOutputStream response = new DataOutputStream(clientSocket.getOutputStream());
-                BufferedReader input = new BufferedReader(inputStream);
-                
-                String inputQuery = input.readLine();
-                System.out.println("The input query is: " + inputQuery);
-                
-                String outputJson = "json";
-                response.writeBytes(outputJson);
-                response.flush();
-                response.close();
-                
-	
-		    } catch (IOException e) {
-		    	System.out.println("Accept failed.");
-		    }
-
-/*
-		    out.println("HTTP/1.1 200 OK");
-		    out.println("Content-Type: text/html");
-		    out.println("\r\n");
-		    out.println("<p> Hello world </p>");
-		    out.flush();
-*/
-
-		/*
-			System.out.println("Ask entities");
-			Entity wiki = askWikiDataEntity();
-			Entity db = askDBpediaEntity();
-
-			agg = new Aggregator();
-			agg.setDBpediaDescription(db.getDescription());
-			agg.setWikiDataDescription(wiki.getDescription());
-			agg.setWdProp(wiki.getListOfPropertiesAndPairs());
-			agg.setDbProp(db.getListOfPropertiesAndPairs());
-
-			System.out.println("Check SameAs links");
-			checkSameAsProperties();
-	
-			System.out.println("Check CustomSameAs links");
-			checkCustomSameAsProperties();
-			
-			System.out.println("End");
-			*/
-			
-		    //out.close();
-	/*
+			this.inputStream.close();
+			this.response.close();
+			this.input.close();
+			this.clientSocket.close();
 		} catch (IOException e) {
-			System.out.println("Fail!: " + e.toString());
+			e.printStackTrace();
 		}
-		*/
-
 	}
 
 	private void checkSameAsProperties() {

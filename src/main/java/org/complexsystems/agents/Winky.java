@@ -6,8 +6,8 @@ import org.complexsystems.WikiDataGetModule;
 import org.complexsystems.tools.Entity;
 
 import jade.core.Agent;
-import jade.core.behaviours.*;
-import jade.lang.acl.*;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
 
 public class Winky extends Agent {
 
@@ -16,7 +16,6 @@ public class Winky extends Agent {
 	@Override
 	protected void setup() {
 		
-		//aggiungo una behavior
 		addBehaviour(new CyclicBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
@@ -25,16 +24,16 @@ public class Winky extends Agent {
 				if (msg != null) {
 					System.out.println(" - " + myAgent.getLocalName() + " <- "
 							+ "ha ricevuto un messaggio");
-										
+
 				    ACLMessage reply = new ACLMessage( ACLMessage.INFORM );
 				    try {
-						reply.setContentObject( getWikiDataEntity(msg.getContent())  );
+						reply.setContentObject(getWikiDataEntity(msg.getContent()));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				    reply.addReceiver( msg.getSender() );
 				    send(reply);
-					
+				    doDelete();
 				}
 				block();
 			}
