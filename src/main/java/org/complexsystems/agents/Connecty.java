@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.HashSet;
 
 import org.complexsystems.DBpediaWikiDataConnector;
@@ -183,11 +183,14 @@ public class Connecty extends Agent {
 		addBehaviour(new CyclicBehaviour()
         {
 			private static final long serialVersionUID = 1L;
+            private boolean winkyReply = false;
+            private boolean debbyReply = false;
 
 			public void action() 
             {
             	//ricevo il messaggio
                 ACLMessage msg= receive();
+
                 if (msg!=null)
 					try {
 						System.out.println( " - " +
@@ -200,6 +203,7 @@ public class Connecty extends Agent {
 							Entity wiki = ((Entity) msg.getContentObject());
 							agg.setWikiDataDescription(wiki.getDescription());
 							agg.setWdProp(wiki.getListOfPropertiesAndPairs());
+							winkyReply = true;
 						}
 						else if (sender.contains("Debby"))
 						{
@@ -207,50 +211,59 @@ public class Connecty extends Agent {
 							agg.setDBpediaDescription(db.getDescription());
 							agg.setDbProp(db.getListOfPropertiesAndPairs());
 							agg.setDbpediaAbstract(db.getSummary());
+							debbyReply = true;
 						}
 						
-						if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
-						{
-							System.out.println("Check SameAs links");
-							checkSameAsProperties();
-					
-							System.out.println("Check CustomSameAs links");
-							checkCustomSameAsProperties();
-							
-							System.out.println("Check Cosine links");
-							checkCosineSameAsProperties();
-							
-							System.out.println("Check Jaccard links");
-							checkJaccardSameAsProperties();
-							
-							System.out.println("Removing duplicate....");
-							agg.removeDuplicate();
-							
-							Results res = new Results();
-							res.setDbpediaDescription(agg.getDBpediaDescription());
-							res.setWikidataDescription(agg.getWikiDataDescription());
-							res.setPairs(agg.data);
-							res.setEntity(inputQuery);
-							res.setDbpediaAbstract(agg.getDbpediaAbstract());
-				            ObjectMapper mapper = new ObjectMapper();
-				    		String jsonString = "";
-				    		String jsonPrettyString = "";
-				    		try {
-				    			jsonString = mapper.writeValueAsString(res);
-				    			jsonPrettyString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(res);
-				    		} catch (JsonGenerationException e) {
-				    	         e.printStackTrace();
-				    		} catch (JsonMappingException e) {
-				    	         e.printStackTrace();
-				    	    } catch (IOException e) {
-				    	         e.printStackTrace();
-				    	    }
-				            
-				    		System.out.println(jsonPrettyString);
-				    		
-				    		response.writeBytes(jsonString);
-				    		response.flush();
-							doDelete();
+						if (winkyReply && debbyReply) {
+							if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
+							{
+								System.out.println("Check SameAs links");
+								checkSameAsProperties();
+						
+								System.out.println("Check CustomSameAs links");
+								checkCustomSameAsProperties();
+								
+								System.out.println("Check Cosine links");
+								checkCosineSameAsProperties();
+								
+								System.out.println("Check Jaccard links");
+								checkJaccardSameAsProperties();
+								
+								System.out.println("Removing duplicate....");
+								agg.removeDuplicate();
+								
+								Results res = new Results();
+								res.setDbpediaDescription(agg.getDBpediaDescription());
+								res.setWikidataDescription(agg.getWikiDataDescription());
+								res.setPairs(agg.data);
+								res.setEntity(inputQuery);
+								res.setDbpediaAbstract(agg.getDbpediaAbstract());
+					            ObjectMapper mapper = new ObjectMapper();
+					    		String jsonString = "";
+					    		String jsonPrettyString = "";
+					    		try {
+					    			jsonString = mapper.writeValueAsString(res);
+					    			jsonPrettyString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(res);
+					    		} catch (JsonGenerationException e) {
+					    	         e.printStackTrace();
+					    		} catch (JsonMappingException e) {
+					    	         e.printStackTrace();
+					    	    } catch (IOException e) {
+					    	         e.printStackTrace();
+					    	    }
+					            
+					    		System.out.println(jsonPrettyString);
+					    		
+					    		response.writeBytes(jsonString);
+					    		response.flush();
+								doDelete();
+							} else {
+								if (agg.getDbProp().size() == 0)
+									System.out.println("La ricerca di Debby non ha prodotto risultati");
+								if (agg.getWdProp().size() == 0)
+									System.out.println("La ricerca di Winky non ha prodotto risultati");
+								doDelete();
+							}
 						}
 					} catch (UnreadableException e) {
 						e.printStackTrace();
