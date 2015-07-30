@@ -151,8 +151,8 @@ public class Connecty extends Agent {
     	}
 		
 	    //Creo Winky e Debby
-	    String nameWinkyAgent = "Winky-" + String.valueOf((new Date()).hashCode());
-	    String nameDebbyAgent = "Debby-" + String.valueOf((new Date()).hashCode());
+	    String nameWinkyAgent = this.getLocalName().replace("Connecty", "Winky");
+	    String nameDebbyAgent = this.getLocalName().replace("Connecty", "Debby");
 		AgentContainer c = getContainerController();
 		try {
 			AgentController a = c.createNewAgent(nameWinkyAgent, "org.complexsystems.agents.Winky", null);

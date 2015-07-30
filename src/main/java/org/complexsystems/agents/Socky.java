@@ -25,7 +25,7 @@ public class Socky extends Agent {
 			public void action() {
 				try {
 					ServerSocket server = new ServerSocket(4309);
-					System.out.println("partito");
+					System.out.println("In attesa di richieste...");
 					while(true)
 					{
 						Socket client = server.accept();
