@@ -394,7 +394,7 @@ public class Connecty extends Agent {
 				String dbProperty = cleanDBpediaProperty(dbPair.getUriProperty());
 				
 				double score = c1.similarity(StringStaticTools.splitCamelCase(wdProperty), StringStaticTools.splitCamelCase(dbProperty));
-				if (score > 0.60) {//dammi tre paroleee
+				if (score > 0.70) {//dammi tre paroleee
 										
 					ArrayList<Pair<String, String>> tempWd = new ArrayList<Pair<String, String>>();
 					for (Pair<String, String> pair : agg.wdProp) {
