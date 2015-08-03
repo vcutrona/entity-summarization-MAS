@@ -54,24 +54,24 @@ public class WikiDataSPARQLRetriever implements Retriever {
 		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 
 		while (results.hasNext()) {
-			
+						
 			QuerySolution node = results.next();
 			RDFNode propNode = node.get("property");
-			RDFNode objNode = node.get("object");			
-			RDFNode propLabelNode = node.get("labelProperty");
-			RDFNode objLabelNode = node.get("labelObject");
-			
-			
+			RDFNode objectNode = node.get("object");			
+			RDFNode objectLabelNode = node.get("objectLabel");
+			RDFNode statementURINode = node.get("statementURI");
+			RDFNode statQualNode = node.get("statQual");
+			RDFNode statQualLabelNode = node.get("statQualLabel");
 			
 			String prop = propNode.toString();
-			String obj = objNode.toString();
-			String propLabel = propLabelNode.toString();
-			String objLabel = objLabelNode.toString();
+			String object = objectNode.toString();
+			String statQualLabel = statQualLabelNode.toString();
+			String objectLabel = objectLabelNode.toString();
 			
 			
-			Pair<String, String> pair = new Pair<String, String>(propLabel, objLabel);
+			Pair<String, String> pair = new Pair<String, String>(statQualLabel, objectLabel);
 			pair.setUriProperty(prop);
-			pair.setUriObject(obj);
+			pair.setUriObject(object);
 			list.add(pair);
 		}
 		return list;
