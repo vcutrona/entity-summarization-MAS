@@ -32,17 +32,20 @@ public class WikiDataSPARQLRetriever implements Retriever {
 				new ArrayList<Pair<String, String>>();
 
 		ParameterizedSparqlString qs = new ParameterizedSparqlString(""
-				+ "prefix rdfs:" + RDFSCHEMAPREFIX + "\n\n"
-				+ "prefix wd:" + WDPREFIX + "\n\n"
-				+ "prefix wdt:" + WDTPREFIX + "\n\n"
-				+ "prefix wikibase:" + WIKIBASEPEFIX + "\n\n"
-				+ " SELECT ?labelProperty ?property ?labelObject ?object WHERE { "
-				+ "  wd:Q42 ?p ?object."
-				+ "  ?property ?ref ?p ."
-				+ "  ?property a wikibase:Property ."
-				+ "  ?property rdfs:label ?labelProperty FILTER (lang(?labelProperty) = \"en\")"
-				+ "  ?object rdfs:label ?labelObject FILTER (lang(?labelObject) = \"en\")"
-				+ " } ");
+				+ "prefix rdfs:" + RDFSCHEMAPREFIX + "\n"
+				+ "prefix wd:" + WDPREFIX + "\n"
+				+ "prefix wdt:" + WDTPREFIX + "\n"
+				+ "prefix wikibase:" + WIKIBASEPEFIX + "\n"
+				+ "SELECT ?property ?statementURI ?statQual ?statQualLabel ?object ?objectLabel WHERE { wd:Q42 ?p ?statementURI ."
+				+ "?property ?ref ?p ."
+				+ "FILTER regex(str(?statementURI), \"statement\") ."
+				+ "?statementURI ?statQual ?object . ?object rdfs:label ?objectLabel ."
+				+ "FILTER (lang(?objectLabel) = \"en\") ."
+				+ " OPTIONAL {"
+				+ "      ?ak ?bk ?statQual ."
+				+ "      ?ak rdfs:label ?statQualLabel ."
+				+ "      FILTER (lang(?statQualLabel) = \"en\") .\n"
+				+ "}}");
 
 		System.out.println(qs.asQuery());
 		
@@ -79,6 +82,11 @@ public class WikiDataSPARQLRetriever implements Retriever {
 	public String getDescription(String text) {
 		// TODO Auto-generated method stub
 		return "Miao";
+	}
+	
+	public static void main(String [] args) {
+		WikiDataSPARQLRetriever w = new WikiDataSPARQLRetriever();
+		System.out.println(w.getAllPairs("belo"));
 	}
 
 }
