@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
+import org.complexsystems.tools.WikiDataSparqlTextToEntity;
 import org.complexsystems.tools.WikiDataTextToEntity;
 
 public class WikiDataGetModule {
@@ -14,9 +15,12 @@ public class WikiDataGetModule {
 	 */
 	public Entity getData(String query)
 	{
-		WikiDataSPARQLRetriever wdRetriever = new WikiDataSPARQLRetriever();
+		WikiDataSparqlRetriever wdRetriever = new WikiDataSparqlRetriever();
 	
-		String serachString = new WikiDataTextToEntity(query).getEntity();
+		String serachString = new WikiDataSparqlTextToEntity(query).getEntity();
+
+		if (serachString.equals(""))
+			return null;
 
 		ArrayList<Pair<String, String>> wdPairs = wdRetriever
 				.getAllPairs(serachString);
@@ -25,5 +29,4 @@ public class WikiDataGetModule {
 		
 		return ent;
 	}
-
 }

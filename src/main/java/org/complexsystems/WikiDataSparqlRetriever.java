@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.complexsystems.interfaces.Retriever;
 import org.complexsystems.tools.Pair;
+import org.complexsystems.tools.WikidataSparqlResult;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -13,7 +14,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
-public class WikiDataSPARQLRetriever implements Retriever {
+public class WikiDataSparqlRetriever implements Retriever {
 
 	private static final String RDFSCHEMAPREFIX = 
 			"<http://www.w3.org/2000/01/rdf-schema#>";
@@ -22,7 +23,7 @@ public class WikiDataSPARQLRetriever implements Retriever {
 	private static final String WIKIBASEPEFIX ="<http://wikiba.se/ontology#>";
 	private static final String SPARQLSERVICE = "http://wdqs-beta.wmflabs.org/bigdata/namespace/wdq/sparql/";
 
-	public WikiDataSPARQLRetriever() {
+	public WikiDataSparqlRetriever() {
 	}
 
 	@Override
@@ -36,7 +37,8 @@ public class WikiDataSPARQLRetriever implements Retriever {
 				+ "prefix wd:" + WDPREFIX + "\n"
 				+ "prefix wdt:" + WDTPREFIX + "\n"
 				+ "prefix wikibase:" + WIKIBASEPEFIX + "\n"
-				+ "SELECT ?property ?statementURI ?statQual ?statQualLabel ?object ?objectLabel WHERE { wd:Q42 ?p ?statementURI ."
+				+ "SELECT ?property ?statementURI ?statQual ?statQualLabel ?object ?objectLabel WHERE { "
+				+ "<" + searchString + "> ?p ?statementURI ."
 				+ "?property ?ref ?p ."
 				+ "FILTER regex(str(?statementURI), \"statement\") ."
 				+ "?statementURI ?statQual ?object . ?object rdfs:label ?objectLabel ."
@@ -52,9 +54,11 @@ public class WikiDataSPARQLRetriever implements Retriever {
 		QueryExecution exec = QueryExecutionFactory.sparqlService(
 				SPARQLSERVICE, qs.asQuery());
 		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
-
+		
+		ArrayList<WikidataSparqlResult> wdResultStatement = new ArrayList<WikidataSparqlResult>();
+		ArrayList<WikidataSparqlResult> wdResultQualifier = new ArrayList<WikidataSparqlResult>();
+		
 		while (results.hasNext()) {
-						
 			QuerySolution node = results.next();
 			RDFNode propNode = node.get("property");
 			RDFNode objectNode = node.get("object");			
@@ -65,28 +69,64 @@ public class WikiDataSPARQLRetriever implements Retriever {
 			
 			String prop = propNode.toString();
 			String object = objectNode.toString();
-			String statQualLabel = statQualLabelNode.toString();
 			String objectLabel = objectLabelNode.toString();
+			String statementURI = statementURINode.toString();
+			String statQual = statQualNode.toString();
+			String statQualLabel = statQualLabelNode.toString();
 			
+			/*
+			 * Se è uno statement lo salvo nella lista statement, se è un qualifier lo salvo nella lista qualifier
+			 */
+			if (statQual.contains("statement")) {
+				wdResultStatement.add(new WikidataSparqlResult(prop, object, objectLabel, statementURI, statQual, statQualLabel));
+			} else if (statQual.contains("qualifier")) {
+				wdResultQualifier.add(new WikidataSparqlResult(prop, object, objectLabel, statementURI, statQual, statQualLabel));
+			}
+		}
+				
+		/*
+		 * Processo gli statement. Per ognuno, cerco se esiste lo statement di riferimento nei qualifier
+		 */
+		for (WikidataSparqlResult r1 : wdResultStatement) {
+			String uri = r1.getStatementURI();
 			
-			Pair<String, String> pair = new Pair<String, String>(statQualLabel, objectLabel);
-			pair.setUriProperty(prop);
-			pair.setUriObject(object);
+			Pair<String, String> pair = new Pair<String, String>(r1.getStatQualLabel(), r1.getObjectLabel());
+			pair.setUriProperty(r1.getProp());
+			pair.setUriObject(r1.getObject());
+			
+			for (WikidataSparqlResult r2 : wdResultQualifier) {
+				if (r2.getStatementURI().equals(uri)) {
+					pair.addQualifier(new Pair<String, String>(r2.getStatQualLabel(), r2.getObjectLabel()));
+				}
+			}
+			
 			list.add(pair);
 		}
+		
 		return list;
 
 	}
 
 	@Override
 	public String getDescription(String text) {
-		// TODO Auto-generated method stub
-		return "Miao";
+		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX wd: <http://www.wikidata.org/entity/>"
+				+ "SELECT ?description WHERE {"
+				+ "<" + text + "> <http://schema.org/description> ?description . "
+				+ "FILTER (lang(?description) = \"en\") "
+				+" }");
+
+		QueryExecution exec = QueryExecutionFactory.sparqlService(
+				SPARQLSERVICE, qs.asQuery());
+
+		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
+
+		String obj = "";
+		while (results.hasNext()) {
+			RDFNode objNode = results.next().get("description");
+			obj += objNode.toString() + " ";
+
+		}		
+		return obj;
 	}
 	
-	public static void main(String [] args) {
-		WikiDataSPARQLRetriever w = new WikiDataSPARQLRetriever();
-		System.out.println(w.getAllPairs("belo"));
-	}
-
 }
