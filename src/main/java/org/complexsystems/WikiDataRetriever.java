@@ -50,6 +50,7 @@ public class WikiDataRetriever implements Retriever {
 				Statement st = it.next();
 				Claim claim = st.getClaim();
 
+
 				String[] property = getProperty(claim);
 				Pair<String, String> pair = null;
 				try{
@@ -94,9 +95,10 @@ public class WikiDataRetriever implements Retriever {
 		if (claim.getMainSnak() instanceof ValueSnak) {
 			
 			ValueSnak snk = (ValueSnak) claim.getMainSnak();
+			
 			Value v = snk.getValue();
 			String objValue = "";
-
+			
 			if (v instanceof ItemIdValue) {
 				EntityDocument et = wbdf.getEntityDocument(((ItemIdValue) v)
 						.getId()); 

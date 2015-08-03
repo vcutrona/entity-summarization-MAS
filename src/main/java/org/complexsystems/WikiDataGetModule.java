@@ -14,7 +14,7 @@ public class WikiDataGetModule {
 	 */
 	public Entity getData(String query)
 	{
-		WikiDataRetriever wdRetriever = new WikiDataRetriever();
+		WikiDataSPARQLRetriever wdRetriever = new WikiDataSPARQLRetriever();
 	
 		String serachString = new WikiDataTextToEntity(query).getEntity();
 
