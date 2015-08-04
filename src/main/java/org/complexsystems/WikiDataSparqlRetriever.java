@@ -40,14 +40,22 @@ public class WikiDataSparqlRetriever implements Retriever {
 				+ "SELECT ?property ?statementURI ?statQual ?statQualLabel ?object ?objectLabel WHERE { "
 				+ "<" + searchString + "> ?p ?statementURI ."
 				+ "?property ?ref ?p ."
+				+ "?property rdfs:label ?propertyLabel FILTER (lang(?propertyLabel) = \"en\") ."
 				+ "FILTER regex(str(?statementURI), \"statement\") ."
-				+ "?statementURI ?statQual ?object . ?object rdfs:label ?objectLabel ."
-				+ "FILTER (lang(?objectLabel) = \"en\") ."
-				+ " OPTIONAL {"
-				+ "      ?ak ?bk ?statQual ."
-				+ "      ?ak rdfs:label ?statQualLabel ."
-				+ "      FILTER (lang(?statQualLabel) = \"en\") .\n"
-				+ "}}");
+					+ "OPTIONAL {"
+						+ "?statementURI ?statQual ?object ."
+						+ "FILTER( regex(str(?statQual), \"statement\") || regex(str(?statQual), \"qualifier\") ) ."
+						+ "FILTER (!regex(str(?object), \"wikidata.org/value\")) ."
+						+ "OPTIONAL {"
+							+ "?object rdfs:label ?objectLabel ."
+							+ "FILTER (lang(?objectLabel) = \"en\") ."
+						+ "}"
+						+ "OPTIONAL {"
+							+ "?ak ?bk ?statQual ."
+							+ "?ak rdfs:label ?statQualLabel FILTER (lang(?statQualLabel) = \"en\") ."
+						+ "}"
+					+ "} "
+				+ "}");
 
 		System.out.println(qs.asQuery());
 		
@@ -69,10 +77,12 @@ public class WikiDataSparqlRetriever implements Retriever {
 			
 			String prop = propNode.toString();
 			String object = objectNode.toString();
-			String objectLabel = objectLabelNode.toString();
+			String objectLabel = "";
+			if (objectLabelNode != null)
+				objectLabel = objectLabelNode.toString();
 			String statementURI = statementURINode.toString();
 			String statQual = statQualNode.toString();
-			String statQualLabel = statQualLabelNode.toString();
+			String statQualLabel = statQualLabelNode.toString().replace("@en", "");
 			
 			/*
 			 * Se è uno statement lo salvo nella lista statement, se è un qualifier lo salvo nella lista qualifier
@@ -89,14 +99,20 @@ public class WikiDataSparqlRetriever implements Retriever {
 		 */
 		for (WikidataSparqlResult r1 : wdResultStatement) {
 			String uri = r1.getStatementURI();
+			String label1 = r1.getObjectLabel();
+			if (label1.equals(""))
+				label1 = r1.getObject();
 			
-			Pair<String, String> pair = new Pair<String, String>(r1.getStatQualLabel(), r1.getObjectLabel());
+			Pair<String, String> pair = new Pair<String, String>(r1.getStatQualLabel(), label1);
 			pair.setUriProperty(r1.getProp());
 			pair.setUriObject(r1.getObject());
 			
 			for (WikidataSparqlResult r2 : wdResultQualifier) {
 				if (r2.getStatementURI().equals(uri)) {
-					pair.addQualifier(new Pair<String, String>(r2.getStatQualLabel(), r2.getObjectLabel()));
+					String label2 = r2.getObjectLabel();
+					if (label2.equals(""))
+						label2 = r2.getObject();
+					pair.addQualifier(new Pair<String, String>(r2.getStatQualLabel(), label2));
 				}
 			}
 			
@@ -126,7 +142,7 @@ public class WikiDataSparqlRetriever implements Retriever {
 			obj += objNode.toString() + " ";
 
 		}		
-		return obj;
+		return obj.replace("@en", "");
 	}
 	
 }

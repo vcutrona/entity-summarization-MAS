@@ -91,14 +91,43 @@ public class DBpediaRetriever implements Retriever {
 		String obj = "";
 		while (results.hasNext()) {
 			RDFNode objNode = results.next().get("obj");
-			return obj = objNode.toString();
+			obj = objNode.toString();
 
 		}
-		return obj;
+		return obj.replace("@en", "");
 	}
 	
 	@Override
 	public String getDescription(String text) {
+		String shortDescr = getShortDescription(text);
+		if (getShortDescription(text).equals(""))
+			shortDescr = "Keywords: " + getUmbelKeywords(text);
+		return shortDescr;
+	}
+	
+	private String getShortDescription(String text) {
+		ParameterizedSparqlString qs = new ParameterizedSparqlString(
+				"SELECT ?description WHERE {"
+				+ text + " <http://dbpedia.org/property/shortDescription> ?description . "
+				+ "FILTER (lang(?description) = \"en\") "
+				+" }");
+
+		QueryExecution exec = QueryExecutionFactory.sparqlService(
+				SPARQLSERVICE, qs.asQuery());
+
+		ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
+
+		String obj = "";
+		while (results.hasNext()) {
+			RDFNode objNode = results.next().get("description");
+			if (objNode != null)
+				obj += objNode.toString() + " ";
+
+		}		
+		return obj.replace("@en", "");
+	}
+	
+	private String getUmbelKeywords(String text) {
 		ParameterizedSparqlString qs = new ParameterizedSparqlString("PREFIX dbo:<http://dbpedia.org/ontology/> \n"
 				+ "select ?obj where {\n" 
 				+ "  " + text
@@ -113,12 +142,14 @@ public class DBpediaRetriever implements Retriever {
 		String obj = "";
 		while (results.hasNext()) {
 			RDFNode objNode = results.next().get("obj");
-			obj += objNode.toString() + " ";
+			if (objNode != null)
+				obj += objNode.toString() + " ";
 
 		}
 		obj = obj.replace("http://umbel.org/umbel/rc/", "");
 		return obj;
 	}
+	
 	
 	public static void main(String args[])
 	{
