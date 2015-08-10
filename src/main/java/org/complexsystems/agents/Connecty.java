@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import java.util.HashSet;
 
 import org.complexsystems.DBpediaWikiDataConnector;
@@ -217,6 +216,7 @@ public class Connecty extends Agent {
 						if (winkyReply && debbyReply) {
 							if(agg.getDbProp().size() != 0 && agg.getWdProp().size() != 0)
 							{
+								
 								System.out.println("Check SameAs links");
 								checkSameAsProperties();
 						
@@ -238,6 +238,22 @@ public class Connecty extends Agent {
 								res.setPairs(agg.data);
 								res.setEntity(inputQuery);
 								res.setDbpediaAbstract(agg.getDbpediaAbstract());
+
+								//add statistics
+								Set<String> set = new HashSet<String>();
+								for (Pair<String, String> pair : agg.dbProp) {
+									set.add(pair.getUriProperty());
+								}
+								res.setTotalDbProperties(set.size());
+								
+								set.clear();
+								
+								for (Pair<String, String> pair : agg.wdProp) {
+									set.add(pair.getUriProperty());
+								}
+								res.setTotalWdProperties(set.size());
+								res.setSameProperties(agg.data.size());
+								
 					            ObjectMapper mapper = new ObjectMapper();
 					    		String jsonString = "";
 					    		String jsonPrettyString = "";

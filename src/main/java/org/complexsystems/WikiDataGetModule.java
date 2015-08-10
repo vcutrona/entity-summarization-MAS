@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.complexsystems.tools.Entity;
 import org.complexsystems.tools.Pair;
 import org.complexsystems.tools.WikiDataSparqlTextToEntity;
-import org.complexsystems.tools.WikiDataTextToEntity;
 
 public class WikiDataGetModule {
 	

@@ -51,8 +51,6 @@ public class DBpediaRetriever implements Retriever {
 			RDFNode propNode = node.get("prop");
 			RDFNode objNode = node.get("obj");
 			
-			
-			
 			String prop = propNode.toString();
 			String obj = objNode.toString();
 			

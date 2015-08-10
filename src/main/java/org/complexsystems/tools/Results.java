@@ -7,6 +7,9 @@ public class Results {
 	private String dbpediaAbstract;
 	private String wikidataDescription;
 	private String dbpediaDescription;
+	private int totalDbProperties;
+	private int totalWdProperties;
+	private int sameProperties;
 	private ArrayList<Row> pairs;
 	
 	public String getWikidataDescription() {
@@ -47,5 +50,30 @@ public class Results {
 
 	public void setDbpediaAbstract(String dbpediaAbstract) {
 		this.dbpediaAbstract = dbpediaAbstract;
-	}	
+	}
+
+	public int getTotalDbProperties() {
+		return totalDbProperties;
+	}
+
+	public void setTotalDbProperties(int totalDbProperties) {
+		this.totalDbProperties = totalDbProperties;
+	}
+
+	public int getTotalWdProperties() {
+		return totalWdProperties;
+	}
+
+	public void setTotalWdProperties(int totalWdProperties) {
+		this.totalWdProperties = totalWdProperties;
+	}
+
+	public int getSameProperties() {
+		return sameProperties;
+	}
+
+	public void setSameProperties(int sameProperties) {
+		this.sameProperties = sameProperties;
+	}
+	
 }
